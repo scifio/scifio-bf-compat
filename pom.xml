@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.scijava</groupId>
+    <artifactId>pom-scijava</artifactId>
+    <version>1.48</version>
+  </parent>
+
+  <groupId>io.scif</groupId>
+  <artifactId>scifio-bf-compat</artifactId>
+  <version>1.0.0-SNAPSHOT</version>
+
+  <name>SCIFIO-Bio-Formats Compatibility Format</name>
+  <description>Compatibility layer for using un-converted Bio-Formats readers
+  in SCIFIO applications.</description>
+  <url>http://scif.io/</url>
+  <inceptionYear>2013</inceptionYear>
+
+  <dependencies>
+    <dependency>
+      <groupId>${bio-formats.groupId}</groupId>
+      <artifactId>bio-formats</artifactId>
+      <version>4.4.8</version>
+    </dependency>
+    <dependency>
+      <groupId>${scifio.groupId}</groupId>
+      <artifactId>scifio</artifactId>
+      <version>0.3.0</version>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-source-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>buildnumber-maven-plugin</artifactId>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <configuration>
+          <licenseName>gpl_v2</licenseName>
+          <projectName>SCIFIO Bio-Formats compatibility format.</projectName>
+          <organizationName>Open Microscopy Environment:
+  - Board of Regents of the University of Wisconsin-Madison
+  - Glencoe Software, Inc.
+  - University of Dundee</organizationName>
+          <addJavaLicenseAfterPackage>false</addJavaLicenseAfterPackage>
+          <canUpdateDescription>true</canUpdateDescription>
+          <canUpdateCopyright>true</canUpdateCopyright>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
+  <licenses>
+    <license>
+      <name>GPL 2 or later</name>
+      <url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
+  <organization>
+    <name>SCIFIO</name>
+    <url>http://scif.io/</url>
+  </organization>
+
+  <developers>
+    <developer>
+      <id>hinerm</id>
+      <name>Mark Hiner</name>
+      <email>hinerm@gmail.edu</email>
+      <url>http://developer.imagej.net/users/hinerm</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+    <developer>
+      <id>curtis</id>
+      <name>Curtis Rueden</name>
+      <email>ctrueden@wisc.edu</email>
+      <url>http://loci.wisc.edu/people/curtis-rueden</url>
+      <organization>UW-Madison LOCI</organization>
+      <organizationUrl>http://loci.wisc.edu/</organizationUrl>
+      <roles>
+        <role>architect</role>
+        <role>developer</role>
+      </roles>
+      <timezone>-6</timezone>
+    </developer>
+  </developers>
+
+  <issueManagement>
+    <system>GitHub Issues</system>
+    <url>https://github.com/scifio/scifio-bf-compat/issues</url>
+  </issueManagement>
+
+  <ciManagement>
+    <system>Jenkins</system>
+    <url>http://jenkins.imagej.net/view/SCIFIO/</url>
+  </ciManagement>
+
+  <mailingLists>
+    <mailingList>
+      <name>SciJava</name>
+      <subscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</subscribe>
+      <unsubscribe>https://groups.google.com/forum/?fromgroups#!forum/scijava</unsubscribe>
+      <post>scijava@googlegroups.com</post>
+      <archive>https://groups.google.com/forum/?fromgroups#!forum/scijava</archive>
+    </mailingList>
+  </mailingLists>
+
+  <scm>
+    <connection>scm:git:git://github.com/scifio/scifio-bf-compat</connection>
+    <developerConnection>scm:git:git@github.com:scifio/scifio-bf-compat</developerConnection>
+    <tag>HEAD</tag>
+    <url>http://github.com/scifio/scifio-bf-compat</url>
+  </scm>
+
+  <!-- NB: for parent project -->
+  <repositories>
+    <repository>
+      <id>imagej.releases</id>
+      <url>http://maven.imagej.net/content/repositories/releases</url>
+    </repository>
+    <repository>
+      <id>imagej.snapshots</id>
+      <url>http://maven.imagej.net/content/repositories/snapshots</url>
+    </repository>
+  </repositories>
+
+</project>

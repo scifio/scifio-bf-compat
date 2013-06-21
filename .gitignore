@@ -1,1 +1,13 @@
-target/
+.classpath
+.project
+.settings
+.DS_Store
+build
+emailable-report.html
+index.html
+target
+test-output
+testng-results.xml
+testng.css
+tools/*.jar
+*.log
