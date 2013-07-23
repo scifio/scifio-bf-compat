@@ -1,4 +1,5 @@
 scifio-bf-compat
 ================
 
-SCIFIO (@scifio/scifio) plug-in allowing the use Bio-Formats readers.
+[SCIFIO](https://github.com/scifio/scifio) plug-in allowing the use
+[Bio-Formats](https://github.com/openmicroscopy/bioformats) readers.
