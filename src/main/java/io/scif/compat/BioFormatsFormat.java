@@ -42,6 +42,7 @@ import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 import loci.formats.ClassList;
 import loci.formats.IFormatReader;
@@ -53,6 +54,7 @@ import net.imglib2.meta.AxisType;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+import org.scijava.util.IntArray;
 
 /**
  * Wraps an {@link ImageReader} in a SCIFIO {@link Format},
@@ -287,38 +289,42 @@ public class BioFormatsFormat extends AbstractFormat {
     ImageMetadata imgMeta = new DefaultImageMetadata();
     reader.setSeries(s);
 
-    int[] axisLengths = new int[5];
-    AxisType[] axisTypes = new AxisType[5];
-
+    final ArrayList<AxisType> axisTypes = new ArrayList<AxisType>();
+    final IntArray axisLengths = new IntArray();
 
     final String dimOrder = reader.getDimensionOrder().toUpperCase();
     for (int i = 0; i < dimOrder.length(); i++) {
       switch (dimOrder.charAt(i)) {
         case 'X':
-          axisLengths[i] = reader.getSizeX();
-          axisTypes[i] = Axes.X;
+          if (reader.getSizeX() <= 1) continue;
+          axisTypes.add(Axes.X);
+          axisLengths.add(reader.getSizeX());
           break;
         case 'Y':
-          axisLengths[i] = reader.getSizeY();
-          axisTypes[i] = Axes.Y;
+          if (reader.getSizeY() <= 1) continue;
+          axisTypes.add(Axes.Y);
+          axisLengths.add(reader.getSizeY());
           break;
         case 'Z':
-          axisLengths[i] = reader.getSizeZ();
-          axisTypes[i] = Axes.Z;
+          if (reader.getSizeZ() <= 1) continue;
+          axisTypes.add(Axes.Z);
+          axisLengths.add(reader.getSizeZ());
           break;
         case 'C':
-          axisLengths[i] = reader.getSizeC();
-          axisTypes[i] = Axes.CHANNEL;
+          if (reader.getSizeC() <= 1) continue;
+          axisTypes.add(Axes.CHANNEL);
+          axisLengths.add(reader.getSizeC());
           break;
         case 'T':
-          axisLengths[i] = reader.getSizeT();
-          axisTypes[i] = Axes.TIME;
+          if (reader.getSizeT() <= 1) continue;
+          axisTypes.add(Axes.TIME);
+          axisLengths.add(reader.getSizeT());
           break;
       }
     }
 
-    imgMeta.setAxisTypes(axisTypes);
-    imgMeta.setAxisLengths(axisLengths);
+    imgMeta.setAxisTypes((AxisType[]) axisTypes.toArray());
+    imgMeta.setAxisLengths(axisLengths.copyArray());
     imgMeta.setRGB(reader.isRGB());
 
     imgMeta.setPlaneCount(reader.getImageCount());
