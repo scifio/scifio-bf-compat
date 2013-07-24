@@ -323,7 +323,7 @@ public class BioFormatsFormat extends AbstractFormat {
       }
     }
 
-    imgMeta.setAxisTypes((AxisType[]) axisTypes.toArray());
+    imgMeta.setAxisTypes(axisTypes.toArray(new AxisType[0]));
     imgMeta.setAxisLengths(axisLengths.copyArray());
     imgMeta.setRGB(reader.isRGB());
 
