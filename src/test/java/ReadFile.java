@@ -25,11 +25,16 @@
 
 import io.scif.Format;
 import io.scif.FormatException;
+import io.scif.Metadata;
+import io.scif.Parser;
 import io.scif.SCIFIO;
 
 import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JFileChooser;
+
+import net.imglib2.meta.AxisType;
 
 /**
  * A simple manual test for the SCIFIO Bio-Formats compatibility layer.
@@ -38,7 +43,7 @@ import javax.swing.JFileChooser;
  */
 public class ReadFile {
 
-  public static void main(String[] args) throws FormatException {
+  public static void main(String[] args) throws FormatException, IOException {
     final SCIFIO scifio = new SCIFIO();
 
     final JFileChooser opener = new javax.swing.JFileChooser(System.getProperty("user.home"));
@@ -49,6 +54,16 @@ public class ReadFile {
     final Format format = scifio.format().getFormat(file.getAbsolutePath());
     System.out.println("file = " + file);
     System.out.println("format = " + format);
+    final Parser parser = format.createParser();
+    final Metadata meta = parser.parse(file);
+    for (int i=0; i<meta.getImageCount(); i++) {
+      System.out.println("image #" + i + " dimensions:");
+      for (int a=0; a<meta.getAxisCount(i); a++) {
+        final AxisType axisType = meta.getAxisType(i, a);
+        final int axisLength = meta.getAxisLength(i, a);
+        System.out.println("\t" + axisLength + " : " + axisType);
+      }
+    }
   }
 
 }
