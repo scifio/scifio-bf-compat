@@ -112,9 +112,11 @@ public class BioFormatsFormat extends AbstractFormat {
       IFormatReader reader = getReader(getClass());
       suffixes = reader.getSuffixes();
       reader.close();
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       LOGGER.error("Error closing Bio-Formats ImageReader", e);
-    } catch (FormatException e) {
+    }
+    catch (FormatException e) {
       LOGGER.error("Error creating IFormatReader" ,e);
     }
   }
@@ -183,9 +185,11 @@ public class BioFormatsFormat extends AbstractFormat {
         ImageReader reader = getReader(getClass());
         isFormat = reader.isThisType(name);
         reader.close();
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         LOGGER.error("Error closing Bio-Formats ImageReader");
-      } catch (FormatException e) {
+      }
+      catch (FormatException e) {
         LOGGER.error("Error creating IFormatReader" ,e);
       }
       return isFormat;
@@ -198,9 +202,11 @@ public class BioFormatsFormat extends AbstractFormat {
         ImageReader reader = getReader(getClass());
         isFormat = reader.isThisType(name, open);
         reader.close();
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         LOGGER.error("Error closing Bio-Formats ImageReader");
-      } catch (FormatException e) {
+      }
+      catch (FormatException e) {
         LOGGER.error("Error creating IFormatReader" ,e);
       }
       return isFormat;
@@ -213,7 +219,8 @@ public class BioFormatsFormat extends AbstractFormat {
         ImageReader reader = getReader(getClass());
         isFormat =  reader.isThisType(new RandomAccessInputStreamWrapper(stream));
         reader.close();
-      } catch (FormatException e) {
+      }
+      catch (FormatException e) {
         LOGGER.error("Error creating IFormatReader" ,e);
       }
 
@@ -226,9 +233,11 @@ public class BioFormatsFormat extends AbstractFormat {
         ImageReader reader = getReader(getClass());
         isFormat = reader.isThisType(block);
         reader.close();
-      } catch (IOException e) {
+      }
+      catch (IOException e) {
         LOGGER.error("Error closing Bio-Formats ImageReader");
-      } catch (FormatException e) {
+      }
+      catch (FormatException e) {
         LOGGER.error("Error creating IFormatReader" ,e);
       }
       return isFormat;
@@ -252,7 +261,8 @@ public class BioFormatsFormat extends AbstractFormat {
         meta.setReader(reader);
 
         reader.setId(stream.getFileName());
-      } catch (loci.formats.FormatException e) {
+      }
+      catch (loci.formats.FormatException e) {
         throw new FormatException(e);
       }
     }
@@ -280,7 +290,8 @@ public class BioFormatsFormat extends AbstractFormat {
         else if (reader.get16BitLookupTable() != null) {
           plane.setColorTable(new ColorTable16(reader.get16BitLookupTable()));
         }
-      } catch (loci.formats.FormatException e) {
+      }
+      catch (loci.formats.FormatException e) {
         throw new FormatException(e);
       }
 
@@ -310,9 +321,11 @@ public class BioFormatsFormat extends AbstractFormat {
           }
         }
       }
-    } catch (IOException e) {
+    }
+    catch (IOException e) {
       throw new FormatException(e);
-    } catch (ClassNotFoundException e) {
+    }
+    catch (ClassNotFoundException e) {
       throw new FormatException(e);
     }
 
