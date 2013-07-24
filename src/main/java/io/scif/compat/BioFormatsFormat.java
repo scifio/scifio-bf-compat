@@ -35,15 +35,13 @@ import io.scif.DefaultImageMetadata;
 import io.scif.DefaultMetaTable;
 import io.scif.Format;
 import io.scif.FormatException;
+import io.scif.HasFormat;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 
 import loci.formats.ClassList;
 import loci.formats.CoreMetadata;
@@ -97,6 +95,14 @@ public class BioFormatsFormat extends AbstractFormat {
     "loci.formats.in.ZipReader"
   };
 
+  // -- Fields --
+
+  /**
+   * List of Bio-Formats reader classes, excluding the {@link #DO_NOT_CONVERT}
+   * blacklist.
+   */
+  private final ClassList<IFormatReader> readerClasses;
+
   // -- Constructors --
 
   /**
@@ -104,18 +110,15 @@ public class BioFormatsFormat extends AbstractFormat {
    * list of reader classes from readers.txt.
    */
   public BioFormatsFormat() {
+    readerClasses = compileReaderClasses();
+    suffixes = createImageReader().getSuffixes();
+  }
 
-    try {
-      IFormatReader reader = getReader(getClass());
-      suffixes = reader.getSuffixes();
-      reader.close();
-    }
-    catch (IOException e) {
-      LOGGER.error("Error closing Bio-Formats ImageReader", e);
-    }
-    catch (FormatException e) {
-      LOGGER.error("Error creating IFormatReader" ,e);
-    }
+  // -- BioFormatsFormat API Methods --
+
+  /** Creates a new Bio-Formats {@link ImageReader}. */
+  public ImageReader createImageReader() {
+    return new ImageReader(readerClasses);
   }
 
   // -- Format API Methods --
@@ -169,71 +172,23 @@ public class BioFormatsFormat extends AbstractFormat {
 
     @Override
     public boolean isFormat(String name) {
-      boolean isFormat = false;
-
-      try {
-        ImageReader reader = getReader(getClass());
-        isFormat = reader.isThisType(name);
-        reader.close();
-      }
-      catch (IOException e) {
-        LOGGER.error("Error closing Bio-Formats ImageReader");
-      }
-      catch (FormatException e) {
-        LOGGER.error("Error creating IFormatReader" ,e);
-      }
-      return isFormat;
+      return createImageReader(this).isThisType(name);
     }
 
     @Override
     public boolean isFormat(String name, boolean open) {
-      boolean isFormat = false;
-
-      try {
-        ImageReader reader = getReader(getClass());
-        isFormat = reader.isThisType(name, open);
-        reader.close();
-      }
-      catch (IOException e) {
-        LOGGER.error("Error closing Bio-Formats ImageReader");
-      }
-      catch (FormatException e) {
-        LOGGER.error("Error creating IFormatReader" ,e);
-      }
-      return isFormat;
+      return createImageReader(this).isThisType(name, open);
     }
 
     @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
-      boolean isFormat = false;
-
-      try {
-        ImageReader reader = getReader(getClass());
-        isFormat = reader.isThisType(new RandomAccessInputStreamWrapper(stream));
-        reader.close();
-      }
-      catch (FormatException e) {
-        LOGGER.error("Error creating IFormatReader" ,e);
-      }
-
-      return isFormat;
+      return createImageReader(this).isThisType(
+        new RandomAccessInputStreamWrapper(stream));
     }
 
     @Override
     public boolean checkHeader(byte[] block) {
-      boolean isFormat = false;
-      try {
-        ImageReader reader = getReader(getClass());
-        isFormat = reader.isThisType(block);
-        reader.close();
-      }
-      catch (IOException e) {
-        LOGGER.error("Error closing Bio-Formats ImageReader");
-      }
-      catch (FormatException e) {
-        LOGGER.error("Error creating IFormatReader" ,e);
-      }
-      return isFormat;
+      return createImageReader(this).isThisType(block);
     }
 
   }
@@ -246,7 +201,7 @@ public class BioFormatsFormat extends AbstractFormat {
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
         throws IOException, FormatException {
       try {
-        ImageReader reader = getReader(getClass());
+        ImageReader reader = createImageReader(this);
         meta.setReader(reader);
 
         reader.setId(stream.getFileName());
@@ -287,43 +242,40 @@ public class BioFormatsFormat extends AbstractFormat {
 
   // -- Helper methods --
 
-  // Creates an IFormatReader
-  private static ImageReader getReader(Class<?> klass) throws FormatException {
-    ClassList<IFormatReader> readerClasses = new ClassList<IFormatReader>(IFormatReader.class);
+  /**
+   * Compiles the list of Bio-Formats reader classes, excluding the
+   * {@link #DO_NOT_CONVERT} blacklist.
+   */
+  private ClassList<IFormatReader> compileReaderClasses() {
+    final ClassList<IFormatReader> targetClasses =
+      new ClassList<IFormatReader>(IFormatReader.class);
 
-    InputStream is = klass.getResourceAsStream("/loci/formats/readers.txt");
-    BufferedReader bis = new BufferedReader(new InputStreamReader(is));
-
-    String line = null;
-    try {
-      while((line = bis.readLine()) != null) {
-        if (line.length() > 0 && line.charAt(0) != '#') {
-          String className = line.split("#")[0].trim();
-          if (convert(className)) {
-            @SuppressWarnings("unchecked")
-            Class<? extends IFormatReader> readerClass = (Class<? extends IFormatReader>) Class.forName(className);
-            readerClasses.addClass(readerClass );
-          }
-        }
-      }
-    }
-    catch (IOException e) {
-      throw new FormatException(e);
-    }
-    catch (ClassNotFoundException e) {
-      throw new FormatException(e);
+    // add reader classes to the list, excluding the blacklist
+    final ClassList<IFormatReader> defaultClasses =
+      ImageReader.getDefaultReaderClasses();
+    for (final Class<? extends IFormatReader> c : defaultClasses.getClasses()) {
+      if (convert(c)) targetClasses.addClass(c);
     }
 
-    ImageReader r = new ImageReader(readerClasses);
-    return r;
+    return targetClasses;
   }
 
   /** Returns false if this reader class already exists in SCIFIO. */
-  private static boolean convert(String className) {
+  private boolean convert(Class<? extends IFormatReader> c) {
     for (String s : DO_NOT_CONVERT) {
-      if (s.equals(className)) return false;
+      if (s.equals(c.getName())) return false;
     }
     return true;
+  }
+
+  /**
+   * Creates a new Bio-Formats {@link ImageReader}. This static method takes a
+   * {@link HasFormat} object as input, which is presumed to be one of the
+   * static inner classes of the {@link BioFormatsFormat}, to work around typing
+   * limitations in the SCIFIO component interface hierarchy.
+   */
+  private static ImageReader createImageReader(final HasFormat thing) {
+    return ((BioFormatsFormat) thing.getFormat()).createImageReader();
   }
 
   private static ImageMetadata convertCoreMetadata(CoreMetadata core) {
