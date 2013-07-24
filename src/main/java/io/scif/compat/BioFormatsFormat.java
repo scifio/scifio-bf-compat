@@ -130,10 +130,6 @@ public class BioFormatsFormat extends AbstractFormat {
 
   // -- Nested Classes --
 
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
   public static class Metadata extends AbstractMetadata {
 
     // -- Fields --
@@ -167,10 +163,6 @@ public class BioFormatsFormat extends AbstractFormat {
     }
   }
 
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
   public static class Checker extends AbstractChecker {
 
     // -- Checker API Methods --
@@ -242,10 +234,6 @@ public class BioFormatsFormat extends AbstractFormat {
 
   }
 
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
   public static class Parser extends AbstractParser<Metadata> {
 
     // -- Parser API Methods --
@@ -265,10 +253,6 @@ public class BioFormatsFormat extends AbstractFormat {
     }
   }
 
-  /**
-   * @author Mark Hiner hinerm at gmail.com
-   *
-   */
   public static class Reader extends ByteArrayReader<Metadata> {
 
     // -- Reader API Methods --
