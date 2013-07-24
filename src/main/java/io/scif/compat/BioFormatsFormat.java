@@ -199,7 +199,8 @@ public class BioFormatsFormat extends AbstractFormat {
 
     @Override
     protected void typedParse(RandomAccessInputStream stream, Metadata meta)
-        throws IOException, FormatException {
+      throws IOException, FormatException
+    {
       try {
         ImageReader reader = createImageReader(this);
         meta.setReader(reader);
@@ -217,8 +218,9 @@ public class BioFormatsFormat extends AbstractFormat {
     // -- Reader API Methods --
 
     public ByteArrayPlane openPlane(int imageIndex, int planeIndex,
-        ByteArrayPlane plane, int x, int y, int w, int h)
-            throws FormatException, IOException {
+      ByteArrayPlane plane, int x, int y, int w, int h)
+      throws FormatException, IOException
+    {
       IFormatReader reader = getMetadata().getReader();
       reader.setSeries(imageIndex);
       try {
