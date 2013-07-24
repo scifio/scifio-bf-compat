@@ -333,8 +333,9 @@ public class BioFormatsFormat extends AbstractFormat {
     imgMeta.setThumbSizeY(reader.getThumbSizeY());
     imgMeta.setPixelType(reader.getPixelType());
 
-    int bitsPerPixel = reader.getBitsPerPixel() == 0 ?
-      FormatTools.getBitsPerPixel(reader.getPixelType()) : reader.getBitsPerPixel();
+    int bpp = reader.getBitsPerPixel();
+    int bitsPerPixel = bpp == 0 ?
+      FormatTools.getBitsPerPixel(reader.getPixelType()) : bpp;
     imgMeta.setBitsPerPixel(bitsPerPixel);
     imgMeta.setOrderCertain(reader.isOrderCertain());
     imgMeta.setLittleEndian(reader.isLittleEndian());
