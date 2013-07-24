@@ -167,6 +167,7 @@ public class BioFormatsFormat extends AbstractFormat {
 
     // -- Checker API Methods --
 
+    @Override
     public boolean isFormat(String name) {
       boolean isFormat = false;
 
@@ -184,6 +185,7 @@ public class BioFormatsFormat extends AbstractFormat {
       return isFormat;
     }
 
+    @Override
     public boolean isFormat(String name, boolean open) {
       boolean isFormat = false;
 
@@ -201,6 +203,7 @@ public class BioFormatsFormat extends AbstractFormat {
       return isFormat;
     }
 
+    @Override
     public boolean isFormat(RandomAccessInputStream stream) throws IOException {
       boolean isFormat = false;
 
@@ -216,6 +219,7 @@ public class BioFormatsFormat extends AbstractFormat {
       return isFormat;
     }
 
+    @Override
     public boolean checkHeader(byte[] block) {
       boolean isFormat = false;
       try {
