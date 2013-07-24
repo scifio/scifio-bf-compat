@@ -28,7 +28,10 @@ package io.scif.compat;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
-/** Wrapper class to convert ome.scifio.io.RAIS to loci.common.RAIS. */
+/**
+ * Wrapper class to convert {@link io.scif.io.RandomAccessInputStream} to
+ * {@link loci.common.RandomAccessInputStream}.
+ */
 class RandomAccessInputStreamWrapper
   extends loci.common.RandomAccessInputStream
 {
