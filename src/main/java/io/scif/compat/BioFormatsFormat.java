@@ -303,7 +303,7 @@ public class BioFormatsFormat extends AbstractFormat {
       while((line = bis.readLine()) != null) {
         if (line.length() > 0 && line.charAt(0) != '#') {
           String className = line.split("#")[0].trim();
-          if (!dontConvert(className)) {
+          if (convert(className)) {
             @SuppressWarnings("unchecked")
             Class<? extends IFormatReader> readerClass = (Class<? extends IFormatReader>) Class.forName(className);
             readerClasses.addClass(readerClass );
@@ -320,12 +320,12 @@ public class BioFormatsFormat extends AbstractFormat {
     return r;
   }
   
-  // Returns true if this reader class already exists in SCIFIO
-  private static boolean dontConvert(String className) {
+  /** Returns false if this reader class already exists in SCIFIO. */
+  private static boolean convert(String className) {
     for (String s : DO_NOT_CONVERT) {
-      if (s.equals(className)) return true;
+      if (s.equals(className)) return false;
     }
-    return false;
+    return true;
   }
   
   private static ImageMetadata convertCoreMetadata(CoreMetadata core) {
