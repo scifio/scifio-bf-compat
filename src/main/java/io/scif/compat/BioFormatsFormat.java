@@ -217,7 +217,7 @@ public class BioFormatsFormat extends AbstractFormat {
 
       try {
         ImageReader reader = getReader(getClass());
-        isFormat =  reader.isThisType(new RandomAccessInputStreamWrapper(stream));
+        isFormat = reader.isThisType(new RandomAccessInputStreamWrapper(stream));
         reader.close();
       }
       catch (FormatException e) {
@@ -390,7 +390,7 @@ public class BioFormatsFormat extends AbstractFormat {
     imgMeta.setPixelType(core.pixelType);
 
     int bitsPerPixel = core.bitsPerPixel == 0 ?
-        FormatTools.getBitsPerPixel(core.pixelType) : core.bitsPerPixel;
+      FormatTools.getBitsPerPixel(core.pixelType) : core.bitsPerPixel;
     imgMeta.setBitsPerPixel(bitsPerPixel);
     imgMeta.setChannelLengths(core.cLengths);
     imgMeta.setChannelTypes(core.cTypes);
