@@ -63,16 +63,13 @@ import org.scijava.plugin.Plugin;
  * SCIFIO-based applications.
  * 
  * @author Mark Hiner hinerm at gmail.com
- *
  */
 @Plugin(type = BioFormatsFormat.class, priority = Priority.VERY_HIGH_PRIORITY)
 public class BioFormatsFormat extends AbstractFormat {
 
   // -- Constants --
 
-  /**
-   * List of classes already converted to SCIFIO
-   */
+  /** List of classes already converted to SCIFIO. */
   public static final String[] DO_NOT_CONVERT = new String[]{
     "loci.formats.in.APNGReader",
     "loci.formats.in.AVIReader",
