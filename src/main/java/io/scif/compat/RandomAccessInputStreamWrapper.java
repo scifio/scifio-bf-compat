@@ -42,7 +42,9 @@ class RandomAccessInputStreamWrapper
 
   // -- Constructors --
 
-  public RandomAccessInputStreamWrapper(io.scif.io.RandomAccessInputStream rais) throws IOException {
+  public RandomAccessInputStreamWrapper(io.scif.io.RandomAccessInputStream rais)
+    throws IOException
+  {
     super((String)null);
     this.rais = rais;
   }
