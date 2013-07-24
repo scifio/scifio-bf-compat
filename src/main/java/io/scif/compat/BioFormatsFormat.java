@@ -44,7 +44,6 @@ import io.scif.util.FormatTools;
 import java.io.IOException;
 
 import loci.formats.ClassList;
-import loci.formats.CoreMetadata;
 import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
 import net.imglib2.display.ColorTable16;
@@ -154,8 +153,8 @@ public class BioFormatsFormat extends AbstractFormat {
     // -- Metadata API Methods --
 
     public void populateImageMetadata() {
-      for (CoreMetadata coreMeta : reader.getCoreMetadata()) {
-        add(convertCoreMetadata(coreMeta));
+      for (int s = 0; s < reader.getSeriesCount(); s++) {
+        add(convertMetadata(reader, s));
       }
     }
 
@@ -280,70 +279,68 @@ public class BioFormatsFormat extends AbstractFormat {
     return ((BioFormatsFormat) thing.getFormat()).createImageReader();
   }
 
-  private static ImageMetadata convertCoreMetadata(CoreMetadata core) {
+  /**
+   * Constructs a SCIFIO {@link ImageMetadata} object from the {@code s}th
+   * series of the given Bio-Formats {@link IFormatReader}.
+   */
+  private static ImageMetadata convertMetadata(IFormatReader reader, int s) {
     ImageMetadata imgMeta = new DefaultImageMetadata();
+    reader.setSeries(s);
 
     int[] axisLengths = new int[5];
     AxisType[] axisTypes = new AxisType[5];
 
-    int planeCount = 1;
 
-    for(int i = 0; i < core.dimensionOrder.length(); i++) {
-      switch(core.dimensionOrder.toUpperCase().charAt(i)) {
+    final String dimOrder = reader.getDimensionOrder().toUpperCase();
+    for (int i = 0; i < dimOrder.length(); i++) {
+      switch (dimOrder.charAt(i)) {
         case 'X':
-          axisLengths[i] = core.sizeX;
+          axisLengths[i] = reader.getSizeX();
           axisTypes[i] = Axes.X;
           break;
         case 'Y':
-          axisLengths[i] = core.sizeY;
+          axisLengths[i] = reader.getSizeY();
           axisTypes[i] = Axes.Y;
           break;
         case 'Z':
-          axisLengths[i] = core.sizeZ;
+          axisLengths[i] = reader.getSizeZ();
           axisTypes[i] = Axes.Z;
-          planeCount *= core.sizeZ;
           break;
         case 'C':
-          axisLengths[i] = core.sizeC;
+          axisLengths[i] = reader.getSizeC();
           axisTypes[i] = Axes.CHANNEL;
-          planeCount *= core.sizeC;
           break;
         case 'T':
-          axisLengths[i] = core.sizeT;
+          axisLengths[i] = reader.getSizeT();
           axisTypes[i] = Axes.TIME;
-          planeCount *= core.sizeT;
           break;
       }
     }
 
     imgMeta.setAxisTypes(axisTypes);
     imgMeta.setAxisLengths(axisLengths);
-    imgMeta.setRGB(core.rgb);
+    imgMeta.setRGB(reader.isRGB());
 
-    if (core.rgb) planeCount /= 3;
+    imgMeta.setPlaneCount(reader.getImageCount());
 
-    imgMeta.setPlaneCount(planeCount);
+    imgMeta.setThumbSizeX(reader.getThumbSizeX());
+    imgMeta.setThumbSizeY(reader.getThumbSizeY());
+    imgMeta.setPixelType(reader.getPixelType());
 
-    imgMeta.setThumbSizeX(core.thumbSizeX);
-    imgMeta.setThumbSizeY(core.thumbSizeY);
-    imgMeta.setPixelType(core.pixelType);
-
-    int bitsPerPixel = core.bitsPerPixel == 0 ?
-      FormatTools.getBitsPerPixel(core.pixelType) : core.bitsPerPixel;
+    int bitsPerPixel = reader.getBitsPerPixel() == 0 ?
+      FormatTools.getBitsPerPixel(reader.getPixelType()) : reader.getBitsPerPixel();
     imgMeta.setBitsPerPixel(bitsPerPixel);
-    imgMeta.setChannelLengths(core.cLengths);
-    imgMeta.setChannelTypes(core.cTypes);
-    imgMeta.setOrderCertain(core.orderCertain);
-    imgMeta.setLittleEndian(core.littleEndian);
-    imgMeta.setInterleaved(core.interleaved);
-    imgMeta.setIndexed(core.indexed);
-    imgMeta.setFalseColor(core.falseColor);
-    imgMeta.setMetadataComplete(core.metadataComplete);
+    imgMeta.setOrderCertain(reader.isOrderCertain());
+    imgMeta.setLittleEndian(reader.isLittleEndian());
+    imgMeta.setInterleaved(reader.isInterleaved());
+    imgMeta.setIndexed(reader.isIndexed());
+    imgMeta.setFalseColor(reader.isFalseColor());
+    imgMeta.setMetadataComplete(reader.isMetadataComplete());
 
-    MetaTable table = new DefaultMetaTable(core.seriesMetadata);
+    MetaTable table = new DefaultMetaTable(reader.getSeriesMetadata());
 
     imgMeta.setTable(table);
-    imgMeta.setThumbnail(core.thumbnail);
+    imgMeta.setThumbnail(reader.isThumbnailSeries());
 
     return imgMeta;
   }
