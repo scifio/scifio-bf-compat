@@ -292,6 +292,10 @@ public class BioFormatsFormat extends AbstractFormat {
     final ArrayList<AxisType> axisTypes = new ArrayList<AxisType>();
     final IntArray axisLengths = new IntArray();
 
+    // parse interleaved channel dimensions
+    parseChannelDimensions(reader, true, axisTypes, axisLengths);
+
+    // parse standard dimensions in dimensional order
     final String dimOrder = reader.getDimensionOrder().toUpperCase();
     for (int i = 0; i < dimOrder.length(); i++) {
       switch (dimOrder.charAt(i)) {
@@ -311,9 +315,8 @@ public class BioFormatsFormat extends AbstractFormat {
           axisLengths.add(reader.getSizeZ());
           break;
         case 'C':
-          if (reader.getSizeC() <= 1) continue;
-          axisTypes.add(Axes.CHANNEL);
-          axisLengths.add(reader.getSizeC());
+          // parse non-interleaved channel dimensions
+          parseChannelDimensions(reader, false, axisTypes, axisLengths);
           break;
         case 'T':
           if (reader.getSizeT() <= 1) continue;
@@ -350,6 +353,19 @@ public class BioFormatsFormat extends AbstractFormat {
     imgMeta.setThumbnail(reader.isThumbnailSeries());
 
     return imgMeta;
+  }
+
+  private static void parseChannelDimensions(IFormatReader reader,
+    boolean interleaved, ArrayList<AxisType> axisTypes, IntArray axisLengths)
+  {
+    final int[] cDimLengths = reader.getChannelDimLengths();
+    final String[] cDimTypes = reader.getChannelDimTypes();
+    for (int subC = 0; subC < cDimLengths.length; subC++) {
+      if (cDimLengths[subC] <= 1) continue;
+      if (interleaved != reader.isInterleaved(subC)) continue;
+      axisTypes.add(Axes.get(cDimTypes[subC]));
+      axisLengths.add(cDimLengths[subC]);
+    }
   }
 
 }
