@@ -33,8 +33,6 @@ class RandomAccessInputStreamWrapper
   extends loci.common.RandomAccessInputStream
 {
 
-  // -- Constants --
-
   // -- Fields --
 
   private io.scif.io.RandomAccessInputStream rais;
@@ -48,9 +46,8 @@ class RandomAccessInputStreamWrapper
     this.rais = rais;
   }
 
-  // -- Wrapper API Methods --
+  // -- RandomAccessInputStreamWrapper API Methods --
 
-  /* @see Wrapper#unwrap() */
   public io.scif.io.RandomAccessInputStream unwrap() {
     return rais;
   }
