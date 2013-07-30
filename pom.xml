@@ -21,13 +21,35 @@
   <dependencies>
     <dependency>
       <groupId>${bio-formats.groupId}</groupId>
-      <artifactId>bio-formats</artifactId>
-      <version>4.4.8</version>
+      <artifactId>loci-common</artifactId>
+      <version>${bio-formats.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${bio-formats.groupId}</groupId>
+      <artifactId>scifio</artifactId>
+      <version>${bio-formats.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${imglib2.groupId}</groupId>
+      <artifactId>imglib2</artifactId>
+      <version>${imglib2.version}</version>
     </dependency>
     <dependency>
       <groupId>${scifio.groupId}</groupId>
       <artifactId>scifio</artifactId>
-      <version>0.3.0</version>
+      <version>${scifio.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${scijava-common.groupId}</groupId>
+      <artifactId>scijava-common</artifactId>
+      <version>${scijava-common.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>${bio-formats.groupId}</groupId>
+      <artifactId>bio-formats</artifactId>
+      <version>${bio-formats.version}</version>
+      <scope>runtime</scope>
     </dependency>
   </dependencies>
 
