@@ -63,7 +63,7 @@ import org.scijava.util.IntArray;
  * 
  * @author Mark Hiner hinerm at gmail.com
  */
-@Plugin(type = BioFormatsFormat.class, priority = Priority.VERY_HIGH_PRIORITY)
+@Plugin(type = Format.class, priority = Priority.VERY_HIGH_PRIORITY)
 public class BioFormatsFormat extends AbstractFormat {
 
   // -- Constants --
