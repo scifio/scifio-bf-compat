@@ -43,17 +43,20 @@ import net.imglib2.meta.AxisType;
  */
 public class ReadFile {
 
-	public static void main(final String[] args) throws FormatException,
+	public static void main(final String[] args) throws Exception {
+		final JFileChooser opener =
+			new JFileChooser(System.getProperty("user.home"));
+		final int result = opener.showOpenDialog(null);
+		if (result == JFileChooser.APPROVE_OPTION) {
+			readFile(opener.getSelectedFile());
+		}
+		System.exit(0);
+	}
+
+	private static void readFile(final File file) throws FormatException,
 		IOException
 	{
 		final SCIFIO scifio = new SCIFIO();
-
-		final JFileChooser opener =
-			new javax.swing.JFileChooser(System.getProperty("user.home"));
-		final int result = opener.showOpenDialog(null);
-		if (result != JFileChooser.APPROVE_OPTION) return;
-		final File file = opener.getSelectedFile();
-
 		final Format format = scifio.format().getFormat(file.getAbsolutePath());
 		System.out.println("file = " + file);
 		System.out.println("format = " + format);
