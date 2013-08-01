@@ -43,27 +43,30 @@ import net.imglib2.meta.AxisType;
  */
 public class ReadFile {
 
-  public static void main(String[] args) throws FormatException, IOException {
-    final SCIFIO scifio = new SCIFIO();
+	public static void main(final String[] args) throws FormatException,
+		IOException
+	{
+		final SCIFIO scifio = new SCIFIO();
 
-    final JFileChooser opener = new javax.swing.JFileChooser(System.getProperty("user.home"));
-    int result = opener.showOpenDialog(null);
-    if (result != JFileChooser.APPROVE_OPTION) return;
-    final File file = opener.getSelectedFile();
+		final JFileChooser opener =
+			new javax.swing.JFileChooser(System.getProperty("user.home"));
+		final int result = opener.showOpenDialog(null);
+		if (result != JFileChooser.APPROVE_OPTION) return;
+		final File file = opener.getSelectedFile();
 
-    final Format format = scifio.format().getFormat(file.getAbsolutePath());
-    System.out.println("file = " + file);
-    System.out.println("format = " + format);
-    final Parser parser = format.createParser();
-    final Metadata meta = parser.parse(file);
-    for (int i=0; i<meta.getImageCount(); i++) {
-      System.out.println("image #" + i + " dimensions:");
-      for (int a=0; a<meta.getAxisCount(i); a++) {
-        final AxisType axisType = meta.getAxisType(i, a);
-        final int axisLength = meta.getAxisLength(i, a);
-        System.out.println("\t" + axisLength + " : " + axisType);
-      }
-    }
-  }
+		final Format format = scifio.format().getFormat(file.getAbsolutePath());
+		System.out.println("file = " + file);
+		System.out.println("format = " + format);
+		final Parser parser = format.createParser();
+		final Metadata meta = parser.parse(file);
+		for (int i = 0; i < meta.getImageCount(); i++) {
+			System.out.println("image #" + i + " dimensions:");
+			for (int a = 0; a < meta.getAxisCount(i); a++) {
+				final AxisType axisType = meta.getAxisType(i, a);
+				final int axisLength = meta.getAxisLength(i, a);
+				System.out.println("\t" + axisLength + " : " + axisType);
+			}
+		}
+	}
 
 }
