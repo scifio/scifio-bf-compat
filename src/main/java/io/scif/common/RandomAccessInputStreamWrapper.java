@@ -23,7 +23,7 @@
  * #L%
  */
 
-package io.scif.compat;
+package io.scif.common;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -32,7 +32,7 @@ import java.nio.ByteBuffer;
  * Wrapper class to convert {@link io.scif.io.RandomAccessInputStream} to
  * {@link loci.common.RandomAccessInputStream}.
  */
-class RandomAccessInputStreamWrapper
+public class RandomAccessInputStreamWrapper
   extends loci.common.RandomAccessInputStream
 {
 

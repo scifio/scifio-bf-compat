@@ -23,7 +23,7 @@
  * #L%
  */
 
-package io.scif.compat;
+package io.scif.bf;
 
 import io.scif.Format;
 import io.scif.FormatException;

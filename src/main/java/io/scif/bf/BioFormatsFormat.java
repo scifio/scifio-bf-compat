@@ -23,7 +23,7 @@
  * #L%
  */
 
-package io.scif.compat;
+package io.scif.bf;
 
 import io.scif.AbstractChecker;
 import io.scif.AbstractFormat;
@@ -38,6 +38,7 @@ import io.scif.FormatException;
 import io.scif.HasFormat;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
+import io.scif.common.RandomAccessInputStreamWrapper;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.util.FormatTools;
 
