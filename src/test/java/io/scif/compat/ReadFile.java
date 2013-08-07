@@ -23,6 +23,8 @@
  * #L%
  */
 
+package io.scif.compat;
+
 import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.Metadata;
@@ -59,7 +61,7 @@ public class ReadFile {
 		final SCIFIO scifio = new SCIFIO();
 		final Format format = scifio.format().getFormat(file.getAbsolutePath());
 		System.out.println("file = " + file);
-		System.out.println("format = " + format);
+		System.out.println("format = " + format.getFormatName());
 		final Parser parser = format.createParser();
 		final Metadata meta = parser.parse(file);
 		for (int i = 0; i < meta.getImageCount(); i++) {
