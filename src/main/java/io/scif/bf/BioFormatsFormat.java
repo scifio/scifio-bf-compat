@@ -122,6 +122,12 @@ public class BioFormatsFormat extends AbstractFormat {
   public ImageReader createImageReader() {
     return new ImageReader(readerClasses);
   }
+  
+  /** Adds the given reader class to this format's supported reader list. */
+  public void addReader(Class<IFormatReader> readerClass) {
+  	readerClasses.addClass(readerClass);
+  	suffixes = createImageReader().getSuffixes();
+  }
 
   // -- Format API Methods --
 
