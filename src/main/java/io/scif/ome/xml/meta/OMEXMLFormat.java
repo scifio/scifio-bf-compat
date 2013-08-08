@@ -33,6 +33,7 @@ import io.scif.AbstractTranslator;
 import io.scif.AbstractWriter;
 import io.scif.ByteArrayPlane;
 import io.scif.ByteArrayReader;
+import io.scif.Format;
 import io.scif.FormatException;
 import io.scif.MissingLibraryException;
 import io.scif.Plane;
@@ -76,7 +77,7 @@ import org.xml.sax.helpers.DefaultHandler;
  * @author Melissa Linkert melissa at glencoesoftware.com
  * @author Mark Hiner hinerm at gmail.com
  */
-@Plugin(type = OMEXMLFormat.class)
+@Plugin(type = Format.class)
 public class OMEXMLFormat extends AbstractFormat {
 
 	// -- Static fields --

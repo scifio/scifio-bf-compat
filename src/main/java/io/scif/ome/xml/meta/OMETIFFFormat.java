@@ -87,7 +87,7 @@ import org.scijava.plugin.Plugin;
  * 
  * @author Mark Hiner hinerm at gmail.com
  */
-@Plugin(type = OMETIFFFormat.class, priority = OMETIFFFormat.PRIORITY)
+@Plugin(type = Format.class, priority = OMETIFFFormat.PRIORITY)
 public class OMETIFFFormat extends AbstractFormat {
 
 	// -- Constants --
