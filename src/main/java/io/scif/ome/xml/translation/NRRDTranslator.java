@@ -93,7 +93,7 @@ public class NRRDTranslator {
 								}
 							}
 							else {
-								LOGGER.warn("Expected positive value for PhysicalSize; got {}",
+								log().warn("Expected positive value for PhysicalSize; got " +
 									d);
 							}
 						}

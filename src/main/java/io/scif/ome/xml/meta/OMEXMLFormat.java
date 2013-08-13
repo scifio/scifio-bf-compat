@@ -55,7 +55,7 @@ import io.scif.services.ServiceException;
 import io.scif.util.FormatTools;
 import io.scif.util.ImageTools;
 import io.scif.xml.BaseHandler;
-import io.scif.xml.XMLTools;
+import io.scif.xml.XMLService;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -65,7 +65,9 @@ import loci.formats.meta.MetadataRetrieve;
 import net.imglib2.meta.Axes;
 
 import org.scijava.Priority;
+import org.scijava.log.StderrLogService;
 import org.scijava.plugin.Attr;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.xml.sax.Attributes;
 import org.xml.sax.Locator;
@@ -90,9 +92,12 @@ public class OMEXMLFormat extends AbstractFormat {
 		}
 		catch (final Throwable t) {
 			noOME = true;
-			LOGGER.debug(OMEXMLServiceImpl.NO_OME_XML_MSG, t);
+			// FIXME: no static log access
+//			log().debug(OMEXMLServiceImpl.NO_OME_XML_MSG, t);
 		}
 	}
+
+	// -- Fields --
 
 	// -- Format API Methods --
 
@@ -256,6 +261,11 @@ public class OMEXMLFormat extends AbstractFormat {
 	 */
 	public static class Parser extends AbstractParser<Metadata> {
 
+		// -- Fields --
+
+		@Parameter
+		private XMLService xmlService;
+
 		// -- Parser API Methods --
 
 		@Override
@@ -277,7 +287,7 @@ public class OMEXMLFormat extends AbstractFormat {
 			try {
 				final RandomAccessInputStream s =
 					new RandomAccessInputStream(getContext(), stream.getFileName());
-				XMLTools.parseXML(s, handler);
+				xmlService.parseXML(s, handler);
 				s.close();
 			}
 			catch (final IOException e) {
@@ -300,7 +310,7 @@ public class OMEXMLFormat extends AbstractFormat {
 				throw new FormatException("Pixel data not found");
 			}
 
-			LOGGER.info("Populating metadata");
+			log().info("Populating metadata");
 
 			final OMEMetadata omeMeta = meta.getOMEMeta();
 			OMEXMLMetadata omexmlMeta = null;
@@ -389,7 +399,7 @@ public class OMEXMLFormat extends AbstractFormat {
 
 			// return a blank plane if no pixel data was stored
 			if (pixels.length == 0) {
-				LOGGER.debug("No pixel data for plane #{}", planeIndex);
+				log().debug("No pixel data for plane #" + planeIndex);
 				return plane;
 			}
 
@@ -400,7 +410,8 @@ public class OMEXMLFormat extends AbstractFormat {
 				System.arraycopy(tempPixels, 2, pixels, 0, pixels.length);
 
 				ByteArrayInputStream bais = new ByteArrayInputStream(pixels);
-				CBZip2InputStream bzip = new CBZip2InputStream(bais);
+				CBZip2InputStream bzip =
+					new CBZip2InputStream(bais, new StderrLogService());
 				pixels = new byte[planeSize];
 				bzip.read(pixels, 0, pixels.length);
 				tempPixels = null;
@@ -448,6 +459,9 @@ public class OMEXMLFormat extends AbstractFormat {
 		private Vector<String> xmlFragments;
 		private String currentFragment;
 		private OMEXMLService service;
+
+		@Parameter
+		private XMLService xmlService;
 
 		// -- Constructor --
 
@@ -545,7 +559,7 @@ public class OMEXMLFormat extends AbstractFormat {
 					"<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
 
 			try {
-				XMLTools.parseXML(xml, handler);
+				xmlService.parseXML(xml, handler);
 			}
 			catch (final IOException e) {
 				throw new FormatException(e);
@@ -657,14 +671,20 @@ public class OMEXMLFormat extends AbstractFormat {
 
 	private static class OMEHandler extends BaseHandler {
 
+		// -- Fields --
+
 		private final Vector<String> xmlFragments;
 		private String currentFragment;
+
+		@Parameter
+		private XMLService xmlService;
 
 		// -- Constructor --
 
 		public OMEHandler(final Vector<String> xmlFragments,
 			final String currentFragment)
 		{
+			super(new StderrLogService());
 			this.xmlFragments = xmlFragments;
 			this.currentFragment = currentFragment;
 		}
@@ -689,12 +709,12 @@ public class OMEXMLFormat extends AbstractFormat {
 			final String qName, final Attributes attributes)
 		{
 			final StringBuffer toAppend = new StringBuffer("\n<");
-			toAppend.append(XMLTools.escapeXML(qName));
+			toAppend.append(xmlService.escapeXML(qName));
 			for (int i = 0; i < attributes.getLength(); i++) {
 				toAppend.append(" ");
-				toAppend.append(XMLTools.escapeXML(attributes.getQName(i)));
+				toAppend.append(xmlService.escapeXML(attributes.getQName(i)));
 				toAppend.append("=\"");
-				toAppend.append(XMLTools.escapeXML(attributes.getValue(i)));
+				toAppend.append(xmlService.escapeXML(attributes.getValue(i)));
 				toAppend.append("\"");
 			}
 			toAppend.append(">");
@@ -716,12 +736,16 @@ public class OMEXMLFormat extends AbstractFormat {
 
 	private static class OMEXMLHandler extends BaseHandler {
 
+		@Parameter
+		private XMLService xmlService;
+
 		private final StringBuffer xmlBuffer;
 		private String currentQName;
 		private Locator locator;
 		private final Metadata meta;
 
 		public OMEXMLHandler(final Metadata meta) {
+			super(new StderrLogService());
 			xmlBuffer = new StringBuffer();
 			this.meta = meta;
 		}
@@ -752,8 +776,8 @@ public class OMEXMLFormat extends AbstractFormat {
 				xmlBuffer.append("<");
 				xmlBuffer.append(qName);
 				for (int i = 0; i < attributes.getLength(); i++) {
-					final String key = XMLTools.escapeXML(attributes.getQName(i));
-					String value = XMLTools.escapeXML(attributes.getValue(i));
+					final String key = xmlService.escapeXML(attributes.getQName(i));
+					String value = xmlService.escapeXML(attributes.getValue(i));
 					if (key.equals("BigEndian")) {
 						String endian = value.toLowerCase();
 						if (!endian.equals("true") && !endian.equals("false")) {
@@ -781,8 +805,8 @@ public class OMEXMLFormat extends AbstractFormat {
 				xmlBuffer.append("<");
 				xmlBuffer.append(qName);
 				for (int i = 0; i < attributes.getLength(); i++) {
-					final String key = XMLTools.escapeXML(attributes.getQName(i));
-					String value = XMLTools.escapeXML(attributes.getValue(i));
+					final String key = xmlService.escapeXML(attributes.getQName(i));
+					String value = xmlService.escapeXML(attributes.getValue(i));
 					if (key.equals("Length")) value = "0";
 					xmlBuffer.append(" ");
 					xmlBuffer.append(key);

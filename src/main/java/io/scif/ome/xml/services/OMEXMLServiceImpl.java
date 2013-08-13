@@ -29,8 +29,7 @@ import io.scif.ome.xml.meta.OMEMetadata;
 import io.scif.ome.xml.meta.OMEXMLMetadata;
 import io.scif.ome.xml.meta.OMEXMLMetadataImpl;
 import io.scif.services.ServiceException;
-import io.scif.util.FormatTools;
-import io.scif.xml.XMLTools;
+import io.scif.xml.XMLService;
 
 import java.io.IOException;
 import java.util.Hashtable;
@@ -87,14 +86,20 @@ import org.xml.sax.SAXException;
 @Plugin(type = OMEXMLService.class)
 public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 {
+	
+	public static String URL_BIO_FORMATS_LIBRARY = 
+			"http://www.openmicroscopy.org/site/support/bio-formats4/developers/java-library.html";
 
 	@Parameter
 	OMEXMLMetadataService omexmlMetadataService;
+	
+	@Parameter
+	XMLService xmlService;
 
 	public static final String NO_OME_XML_MSG =
 		"ome-xml.jar is required to read OME-TIFF files.  " +
-			"Please download it from " + FormatTools.URL_BIO_FORMATS_LIBRARIES;
-
+			"Please download it from " + URL_BIO_FORMATS_LIBRARY;
+				
 	/** Logger for this class. */
 	private static final Logger LOGGER = LoggerFactory
 		.getLogger(OMEXMLService.class);
@@ -160,36 +165,36 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				LOGGER.debug("Running UPDATE_2003FC stylesheet.");
 				if (update2003FC == null) {
 					update2003FC =
-						XMLTools.getStylesheet(XSLT_2003FC, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_2003FC, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(xml, update2003FC);
+				transformed = xmlService.transformXML(xml, update2003FC);
 			}
 			else if (version.equals("2006-LO")) {
 				xml = verifyOMENamespace(xml);
 				LOGGER.debug("Running UPDATE_2006LO stylesheet.");
 				if (update2006LO == null) {
 					update2006LO =
-						XMLTools.getStylesheet(XSLT_2006LO, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_2006LO, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(xml, update2006LO);
+				transformed = xmlService.transformXML(xml, update2006LO);
 			}
 			else if (version.equals("2007-06")) {
 				xml = verifyOMENamespace(xml);
 				LOGGER.debug("Running UPDATE_200706 stylesheet.");
 				if (update200706 == null) {
 					update200706 =
-						XMLTools.getStylesheet(XSLT_200706, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_200706, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(xml, update200706);
+				transformed = xmlService.transformXML(xml, update200706);
 			}
 			else if (version.equals("2008-02")) {
 				xml = verifyOMENamespace(xml);
 				LOGGER.debug("Running UPDATE_200802 stylesheet.");
 				if (update200802 == null) {
 					update200802 =
-						XMLTools.getStylesheet(XSLT_200802, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_200802, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(xml, update200802);
+				transformed = xmlService.transformXML(xml, update200802);
 			}
 			else transformed = xml;
 			LOGGER.debug("XML updated to at least 2008-09");
@@ -203,9 +208,9 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				LOGGER.debug("Running UPDATE_200809 stylesheet.");
 				if (update200809 == null) {
 					update200809 =
-						XMLTools.getStylesheet(XSLT_200809, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_200809, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(transformed, update200809);
+				transformed = xmlService.transformXML(transformed, update200809);
 			}
 			LOGGER.debug("XML updated to at least 2009-09");
 			LOGGER.trace("At least 2009-09 dump: {}", transformed);
@@ -216,9 +221,9 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				LOGGER.debug("Running UPDATE_200909 stylesheet.");
 				if (update200909 == null) {
 					update200909 =
-						XMLTools.getStylesheet(XSLT_200909, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_200909, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(transformed, update200909);
+				transformed = xmlService.transformXML(transformed, update200909);
 			}
 			else transformed = xml;
 			LOGGER.debug("XML updated to at least 2010-04");
@@ -231,9 +236,9 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				LOGGER.debug("Running UPDATE_201004 stylesheet.");
 				if (update201004 == null) {
 					update201004 =
-						XMLTools.getStylesheet(XSLT_201004, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_201004, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(transformed, update201004);
+				transformed = xmlService.transformXML(transformed, update201004);
 			}
 			else transformed = xml;
 			LOGGER.debug("XML updated to at least 2010-06");
@@ -243,9 +248,9 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				LOGGER.debug("Running UPDATE_201006 stylesheet.");
 				if (update201006 == null) {
 					update201006 =
-						XMLTools.getStylesheet(XSLT_201006, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_201006, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(transformed, update201006);
+				transformed = xmlService.transformXML(transformed, update201006);
 			}
 			else transformed = xml;
 			LOGGER.debug("XML updated to at least 2011-06");
@@ -255,9 +260,9 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				LOGGER.debug("Running UPDATE_201106 stylesheet.");
 				if (update201106 == null) {
 					update201106 =
-						XMLTools.getStylesheet(XSLT_201106, OMEXMLServiceImpl.class);
+						xmlService.getStylesheet(XSLT_201106, OMEXMLServiceImpl.class);
 				}
-				transformed = XMLTools.transformXML(transformed, update201106);
+				transformed = xmlService.transformXML(transformed, update201106);
 			}
 			else transformed = xml;
 			LOGGER.debug("XML updated to at least 2012-06");
@@ -301,7 +306,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 		throws ServiceException
 	{
 		if (xml != null) {
-			xml = XMLTools.sanitizeXML(xml);
+			xml = xmlService.sanitizeXML(xml);
 		}
 		final OMEModelObject ome =
 			xml == null ? null : createRoot(transformToLatestVersion(xml));
@@ -346,7 +351,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 		final OMEModel model = new OMEModelImpl();
 		OME ome = null;
 		try {
-			ome = new OME(XMLTools.parseDOM(xml).getDocumentElement(), model);
+			ome = new OME(xmlService.parseDOM(xml).getDocumentElement(), model);
 		}
 		catch (final Exception e) {
 			throw new ServiceException(e);
@@ -364,7 +369,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 		else if (o instanceof String) {
 			final String xml = (String) o;
 			try {
-				final Element e = XMLTools.parseDOM(xml).getDocumentElement();
+				final Element e = xmlService.parseDOM(xml).getDocumentElement();
 				String namespace = e.getAttribute("xmlns");
 				if (namespace == null || namespace.equals("")) {
 					namespace = e.getAttribute("xmlns:ome");
@@ -414,7 +419,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 		Document doc = null;
 		Exception exception = null;
 		try {
-			doc = XMLTools.parseDOM(xml);
+			doc = xmlService.parseDOM(xml);
 		}
 		catch (final ParserConfigurationException exc) {
 			exception = exc;
@@ -435,7 +440,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 
 		// convert tweaked DOM back to XML string
 		try {
-			xml = XMLTools.getXML(doc);
+			xml = xmlService.getXML(doc);
 		}
 		catch (final TransformerConfigurationException exc) {
 			exception = exc;
@@ -464,7 +469,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 			Document doc = null;
 			Exception exception = null;
 			try {
-				doc = XMLTools.parseDOM(xml);
+				doc = xmlService.parseDOM(xml);
 			}
 			catch (final ParserConfigurationException exc) {
 				exception = exc;
@@ -503,7 +508,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 
 			// convert tweaked DOM back to XML string
 			try {
-				xml = XMLTools.getXML(doc);
+				xml = xmlService.getXML(doc);
 			}
 			catch (final TransformerConfigurationException exc) {
 				exception = exc;
@@ -516,7 +521,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				return false;
 			}
 		}
-		return XMLTools.validateXML(xml, "OME-XML");
+		return xmlService.validateXML(xml, "OME-XML");
 	}
 
 	/**
@@ -593,7 +598,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 			final String xml = annotation.getValue();
 
 			try {
-				final Document annotationRoot = XMLTools.parseDOM(xml);
+				final Document annotationRoot = xmlService.parseDOM(xml);
 				NodeList metadataNodes =
 					annotationRoot.getElementsByTagName("OriginalMetadata");
 
@@ -763,13 +768,13 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 	/** Ensures that an xmlns:ome element exists. */
 	private String verifyOMENamespace(final String xml) {
 		try {
-			final Document doc = XMLTools.parseDOM(xml);
+			final Document doc = xmlService.parseDOM(xml);
 			final Element e = doc.getDocumentElement();
 			final String omeNamespace = e.getAttribute("xmlns:ome");
 			if (omeNamespace == null || omeNamespace.equals("")) {
 				e.setAttribute("xmlns:ome", e.getAttribute("xmlns"));
 			}
-			return XMLTools.getXML(doc);
+			return xmlService.getXML(doc);
 		}
 		catch (final ParserConfigurationException pce) {}
 		catch (final TransformerConfigurationException tce) {}

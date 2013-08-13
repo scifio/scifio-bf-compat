@@ -92,6 +92,8 @@ public class OMETIFFFormat extends AbstractFormat {
 
 	// -- Constants --
 
+	public static final String URL_OME_TIFF =
+		"http://www.openmicroscopy.org/site/support/ome-model/ome-tiff/";
 	public static final double PRIORITY = TIFFFormat.PRIORITY + 1;
 
 	// -- Fields --
@@ -272,15 +274,17 @@ public class OMETIFFFormat extends AbstractFormat {
 						.intValue());
 					final int tiffWidth = (int) firstIFD.getImageWidth();
 					if (m.getAxisLength(Axes.X) != tiffWidth && s == 0) {
-						LOGGER.warn("SizeX mismatch: OME={}, TIFF={}", m
-							.getAxisLength(Axes.X), tiffWidth);
+						log().warn(
+							"SizeX mismatch: OME=" + m.getAxisLength(Axes.X) + ", TIFF=" +
+								tiffWidth);
 					}
 					m.setAxisLength(Axes.Y, omexmlMeta.getPixelsSizeY(s).getValue()
 						.intValue());
 					final int tiffHeight = (int) firstIFD.getImageLength();
 					if (m.getAxisLength(Axes.Y) != tiffHeight && s == 0) {
-						LOGGER.warn("SizeY mismatch: OME={}, TIFF={}", m
-							.getAxisLength(Axes.Y), tiffHeight);
+						log().warn(
+							"SizeY mismatch: OME=" + m.getAxisLength(Axes.Y) + ", TIFF=" +
+								tiffHeight);
 					}
 					m.setAxisLength(Axes.Z, omexmlMeta.getPixelsSizeZ(s).getValue()
 						.intValue());
@@ -294,8 +298,9 @@ public class OMETIFFFormat extends AbstractFormat {
 					if (m.getPixelType() != tiffPixelType &&
 						(s == 0 || adjustedSamples.get(s)))
 					{
-						LOGGER.warn("PixelType mismatch: OME={}, TIFF={}",
-							m.getPixelType(), tiffPixelType);
+						log().warn(
+							"PixelType mismatch: OME=" + m.getPixelType() + ", TIFF=" +
+								tiffPixelType);
 						m.setPixelType(tiffPixelType);
 					}
 					m.setBitsPerPixel(FormatTools.getBitsPerPixel(m.getPixelType()));
@@ -352,8 +357,9 @@ public class OMETIFFFormat extends AbstractFormat {
 					}
 
 					if (omexmlMeta.getPixelsBinDataCount(s) > 1) {
-						LOGGER.warn("OME-TIFF Pixels element contains BinData elements! "
-							+ "Ignoring.");
+						log().warn(
+							"OME-TIFF Pixels element contains BinData elements! "
+								+ "Ignoring.");
 					}
 					m.setLittleEndian(firstIFD.isLittleEndian());
 					m.setInterleaved(false);
@@ -366,10 +372,10 @@ public class OMETIFFFormat extends AbstractFormat {
 					m.setMetadataComplete(true);
 				}
 				catch (final NullPointerException exc) {
-					LOGGER.error("Incomplete Pixels metadata", exc);
+					log().error("Incomplete Pixels metadata", exc);
 				}
 				catch (final FormatException exc) {
-					LOGGER.error("Format exception when creating ImageMetadata", exc);
+					log().error("Format exception when creating ImageMetadata", exc);
 				}
 			}
 
@@ -396,7 +402,7 @@ public class OMETIFFFormat extends AbstractFormat {
 								plane.reader.close();
 							}
 							catch (final Exception e) {
-								LOGGER.error("Plane closure failure!", e);
+								log().error("Plane closure failure!", e);
 							}
 						}
 					}
@@ -428,7 +434,7 @@ public class OMETIFFFormat extends AbstractFormat {
 					imageIndex, planeIndex);
 			}
 			catch (final IOException e) {
-				LOGGER.error("IOException when trying to read color table", e);
+				log().error("IOException when trying to read color table", e);
 				return null;
 			}
 		}
@@ -491,16 +497,16 @@ public class OMETIFFFormat extends AbstractFormat {
 				return meta.getImageCount() > 0;
 			}
 			catch (final ServiceException se) {
-				LOGGER.debug("OME-XML parsing failed", se);
+				log().debug("OME-XML parsing failed", se);
 			}
 			catch (final NullPointerException e) {
-				LOGGER.debug("OME-XML parsing failed", e);
+				log().debug("OME-XML parsing failed", e);
 			}
 			catch (final FormatException e) {
-				LOGGER.debug("OME-XML parsing failed", e);
+				log().debug("OME-XML parsing failed", e);
 			}
 			catch (final IndexOutOfBoundsException e) {
-				LOGGER.debug("OME-XML parsing failed", e);
+				log().debug("OME-XML parsing failed", e);
 			}
 			return false;
 		}
@@ -578,7 +584,7 @@ public class OMETIFFFormat extends AbstractFormat {
 					meta.getTileHeight()[s] = info[s][0].reader.getOptimalTileHeight(s);
 				}
 				catch (final FormatException e) {
-					LOGGER.debug("OME-XML parsing failed", e);
+					log().debug("OME-XML parsing failed", e);
 				}
 			}
 
@@ -646,7 +652,7 @@ public class OMETIFFFormat extends AbstractFormat {
 				service.getOriginalMetadata(omexmlMeta);
 			if (originalMetadata != null) meta.getTable().putAll(originalMetadata);
 
-			LOGGER.trace(xml);
+			log().trace(xml);
 
 			if (omexmlMeta.getRoot() == null) {
 				throw new FormatException("Could not parse OME-XML from TIFF comment");
@@ -762,8 +768,8 @@ public class OMETIFFFormat extends AbstractFormat {
 
 			for (int i = 0; i < imageCount; i++) {
 				final int s = i;
-				LOGGER.debug("Image[{}] {", i);
-				LOGGER.debug("  id = {}", omexmlMeta.getImageID(i));
+				log().debug("Image[" + i + "] {");
+				log().debug("  id = " + omexmlMeta.getImageID(i));
 
 				adjustedSamples.add(false);
 
@@ -780,8 +786,9 @@ public class OMETIFFFormat extends AbstractFormat {
 				if (adjustedSamples.get(i) ||
 					(samples.get(i) != tiffSamples && (i == 0 || samples.get(i) < 0)))
 				{
-					LOGGER.warn("SamplesPerPixel mismatch: OME={}, TIFF={}", samples
-						.get(i), tiffSamples);
+					log().warn(
+						"SamplesPerPixel mismatch: OME=" + samples.get(i) + ", TIFF=" +
+							tiffSamples);
 					samples.set(i, tiffSamples);
 					adjustedSamples.set(i, true);
 				}
@@ -847,7 +854,7 @@ public class OMETIFFFormat extends AbstractFormat {
 				}
 
 				for (int td = 0; td < tiffDataCount; td++) {
-					LOGGER.debug("    TiffData[{}] {", td);
+					log().debug("    TiffData[" + td + "] {");
 					// extract TiffData parameters
 					String filename = null;
 					String uuid = null;
@@ -855,13 +862,13 @@ public class OMETIFFFormat extends AbstractFormat {
 						filename = omexmlMeta.getUUIDFileName(i, td);
 					}
 					catch (final NullPointerException e) {
-						LOGGER.debug("Ignoring null UUID object when retrieving filename.");
+						log().debug("Ignoring null UUID object when retrieving filename.");
 					}
 					try {
 						uuid = omexmlMeta.getUUIDValue(i, td);
 					}
 					catch (final NullPointerException e) {
-						LOGGER.debug("Ignoring null UUID object when retrieving value.");
+						log().debug("Ignoring null UUID object when retrieving value.");
 					}
 					final NonNegativeInteger tdIFD = omexmlMeta.getTiffDataIFD(i, td);
 					final int ifd = tdIFD == null ? 0 : tdIFD.getValue();
@@ -880,8 +887,8 @@ public class OMETIFFFormat extends AbstractFormat {
 					if (tOneIndexed != null && tOneIndexed) t--;
 
 					if (z >= sizeZ || c >= effSizeC || t >= sizeT) {
-						LOGGER.warn("Found invalid TiffData: Z={}, C={}, T={}",
-							new Object[] { z, c, t });
+						log().warn(
+							"Found invalid TiffData: Z=" + z + ", C=" + c + ", T=" + t);
 						break;
 					}
 
@@ -927,8 +934,9 @@ public class OMETIFFFormat extends AbstractFormat {
 						planes[no].id = filename;
 						planes[no].ifd = ifd + q;
 						planes[no].certain = true;
-						LOGGER.debug("      Plane[{}]: file={}, IFD={}", new Object[] { no,
-							planes[no].id, planes[no].ifd });
+						log().debug(
+							"      Plane[" + no + "]: file=" + planes[no].id + ", IFD=" +
+								planes[no].ifd);
 					}
 					if (numPlanes == null) {
 						// unknown number of planes; fill down
@@ -937,7 +945,7 @@ public class OMETIFFFormat extends AbstractFormat {
 							planes[no].reader = r;
 							planes[no].id = filename;
 							planes[no].ifd = planes[no - 1].ifd + 1;
-							LOGGER.debug("      Plane[{}]: FILLED", no);
+							log().debug("      Plane[" + no + "]: FILLED");
 						}
 					}
 					else {
@@ -947,23 +955,25 @@ public class OMETIFFFormat extends AbstractFormat {
 							planes[no].reader = null;
 							planes[no].id = null;
 							planes[no].ifd = -1;
-							LOGGER.debug("      Plane[{}]: CLEARED", no);
+							log().debug("      Plane[" + no + "]: CLEARED");
 						}
 					}
-					LOGGER.debug("    }");
+					log().debug("    }");
 				}
 
 				if (meta.get(s) == null) continue;
 
 				// verify that all planes are available
-				LOGGER.debug("    --------------------------------");
+				log().debug("    --------------------------------");
 				for (int no = 0; no < num; no++) {
-					LOGGER.debug("    Plane[{}]: file={}, IFD={}", new Object[] { no,
-						planes[no].id, planes[no].ifd });
+					log().debug(
+						"    Plane[" + no + "]: file=" + planes[no].id + ", IFD=" +
+							planes[no].ifd);
 					if (planes[no].reader == null) {
-						LOGGER.warn("Image ID '{}': missing plane #{}.  "
-							+ "Using TiffReader to determine the number of planes.",
-							omexmlMeta.getImageID(i), no);
+						log().warn(
+							"Image ID '" + omexmlMeta.getImageID(i) + "': missing plane #" +
+								no + ".  " +
+								"Using TiffReader to determine the number of planes.");
 						final TIFFFormat.Reader<?> r =
 							getReader(scifio(), TIFFFormat.class);
 						r.setSource(currentId);
@@ -983,7 +993,7 @@ public class OMETIFFFormat extends AbstractFormat {
 					}
 				}
 				info[i] = planes;
-				LOGGER.debug("  }");
+				log().debug("  }");
 
 			}
 
@@ -1069,7 +1079,7 @@ public class OMETIFFFormat extends AbstractFormat {
 			}
 			final IFDList ifdList = r.getMetadata().getIfds();
 			if (i >= ifdList.size()) {
-				LOGGER
+				log()
 					.warn("Error untangling IFDs; the OME-TIFF file may be malformed.");
 				return plane;
 			}
@@ -1106,7 +1116,7 @@ public class OMETIFFFormat extends AbstractFormat {
 				"contains crucial dimensional parameters and other important metadata. " +
 				"Please edit cautiously (if at all), and back up the original data " +
 				"before doing so. For more information, see the OME-TIFF web site: " +
-				FormatTools.URL_OME_TIFF + ". -->";
+				URL_OME_TIFF + ". -->";
 
 		// -- Fields --
 
@@ -1501,7 +1511,7 @@ public class OMETIFFFormat extends AbstractFormat {
 
 			}
 			catch (final FormatException e) {
-				LOGGER.error("Failed to generate TIFF data", e);
+				log().error("Failed to generate TIFF data", e);
 			}
 
 			final OMETIFFPlane[][] info = new OMETIFFPlane[source.getImageCount()][];

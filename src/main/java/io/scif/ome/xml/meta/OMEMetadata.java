@@ -103,7 +103,7 @@ public class OMEMetadata extends AbstractMetadata {
 				root = service.createOMEXMLMetadata();
 			}
 			catch (final ServiceException e) {
-				LOGGER.debug("Failed to get OME-XML Service", e);
+				log().debug("Failed to get OME-XML Service", e);
 			}
 		}
 		return root;

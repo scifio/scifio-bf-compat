@@ -51,7 +51,7 @@ import loci.formats.ImageReader;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -296,7 +296,7 @@ public class BioFormatsFormat extends AbstractFormat {
     ImageMetadata imgMeta = new DefaultImageMetadata();
     reader.setSeries(s);
 
-    final ArrayList<AxisType> axisTypes = new ArrayList<AxisType>();
+    final ArrayList<CalibratedAxis> axisTypes = new ArrayList<CalibratedAxis>();
     final IntArray axisLengths = new IntArray();
 
     // parse interleaved channel dimensions
@@ -308,17 +308,17 @@ public class BioFormatsFormat extends AbstractFormat {
       switch (dimOrder.charAt(i)) {
         case 'X':
           if (reader.getSizeX() <= 1) continue;
-          axisTypes.add(Axes.X);
+          axisTypes.add(FormatTools.calibrate(Axes.X));
           axisLengths.add(reader.getSizeX());
           break;
         case 'Y':
           if (reader.getSizeY() <= 1) continue;
-          axisTypes.add(Axes.Y);
+          axisTypes.add(FormatTools.calibrate(Axes.Y));
           axisLengths.add(reader.getSizeY());
           break;
         case 'Z':
           if (reader.getSizeZ() <= 1) continue;
-          axisTypes.add(Axes.Z);
+          axisTypes.add(FormatTools.calibrate(Axes.Z));
           axisLengths.add(reader.getSizeZ());
           break;
         case 'C':
@@ -327,13 +327,13 @@ public class BioFormatsFormat extends AbstractFormat {
           break;
         case 'T':
           if (reader.getSizeT() <= 1) continue;
-          axisTypes.add(Axes.TIME);
+          axisTypes.add(FormatTools.calibrate(Axes.TIME));
           axisLengths.add(reader.getSizeT());
           break;
       }
     }
 
-    imgMeta.setAxisTypes(axisTypes.toArray(new AxisType[0]));
+    imgMeta.setAxisTypes(axisTypes.toArray(new CalibratedAxis[0]));
     imgMeta.setAxisLengths(axisLengths.copyArray());
     imgMeta.setRGB(reader.isRGB());
 
@@ -363,14 +363,14 @@ public class BioFormatsFormat extends AbstractFormat {
   }
 
   private static void parseChannelDimensions(IFormatReader reader,
-    boolean interleaved, ArrayList<AxisType> axisTypes, IntArray axisLengths)
+    boolean interleaved, ArrayList<CalibratedAxis> axisTypes, IntArray axisLengths)
   {
     final int[] cDimLengths = reader.getChannelDimLengths();
     final String[] cDimTypes = reader.getChannelDimTypes();
     for (int subC = 0; subC < cDimLengths.length; subC++) {
       if (cDimLengths[subC] <= 1) continue;
       if (interleaved != reader.isInterleaved(subC)) continue;
-      axisTypes.add(Axes.get(cDimTypes[subC]));
+      axisTypes.add(FormatTools.calibrate(Axes.get(cDimTypes[subC])));
       axisLengths.add(cDimLengths[subC]);
     }
   }

@@ -334,7 +334,7 @@ public class ICSTranslator {
 						OMEXMLMetadataService.class).getExperimentType(experimentType), 0);
 				}
 				catch (final FormatException e) {
-					LOGGER.debug("Could not set experiment type", e);
+					log().debug("Could not set experiment type", e);
 				}
 
 				// populate Dimensions data
@@ -379,8 +379,8 @@ public class ICSTranslator {
 								store.setPixelsPhysicalSizeX(new PositiveFloat(pixelSize), 0);
 							}
 							else {
-								LOGGER.warn(
-									"Expected positive value for PhysicalSizeX; got {}",
+								log().warn(
+									"Expected positive value for PhysicalSizeX; got " +
 									pixelSize);
 							}
 						}
@@ -391,8 +391,8 @@ public class ICSTranslator {
 								store.setPixelsPhysicalSizeY(new PositiveFloat(pixelSize), 0);
 							}
 							else {
-								LOGGER.warn(
-									"Expected positive value for PhysicalSizeY; got {}",
+								log().warn(
+									"Expected positive value for PhysicalSizeY; got " +
 									pixelSize);
 							}
 						}
@@ -403,8 +403,8 @@ public class ICSTranslator {
 								store.setPixelsPhysicalSizeZ(new PositiveFloat(pixelSize), 0);
 							}
 							else {
-								LOGGER.warn(
-									"Expected positive value for PhysicalSizeZ; got {}",
+								log().warn(
+									"Expected positive value for PhysicalSizeZ; got " +
 									pixelSize);
 							}
 						}
@@ -423,7 +423,7 @@ public class ICSTranslator {
 						store.setPixelsPhysicalSizeX(new PositiveFloat(sizes[0]), 0);
 					}
 					else {
-						LOGGER.warn("Expected positive value for PhysicalSizeX; got {}",
+						log().warn("Expected positive value for PhysicalSizeX; got " +
 							sizes[0]);
 					}
 					if (sizes.length > 1) {
@@ -432,7 +432,7 @@ public class ICSTranslator {
 							store.setPixelsPhysicalSizeY(new PositiveFloat(sizes[1]), 0);
 						}
 						else {
-							LOGGER.warn("Expected positive value for PhysicalSizeY; got {}",
+							log().warn("Expected positive value for PhysicalSizeY; got " +
 								sizes[1]);
 						}
 					}
@@ -498,8 +498,8 @@ public class ICSTranslator {
 							0, i);
 					}
 					else {
-						LOGGER.warn(
-							"Expected positive value for EmissionWavelength; got {}",
+						log().warn(
+							"Expected positive value for EmissionWavelength; got " +
 							emWaves[i]);
 					}
 				}
@@ -509,8 +509,8 @@ public class ICSTranslator {
 							new PositiveInteger(exWaves[i]), 0, i);
 					}
 					else {
-						LOGGER.warn(
-							"Expected positive value for ExcitationWavelength; got {}",
+						log().warn(
+							"Expected positive value for ExcitationWavelength; got " +
 							exWaves[i]);
 					}
 				}
@@ -539,7 +539,7 @@ public class ICSTranslator {
 						.get(lasers[i])), 0, i);
 				}
 				else {
-					LOGGER.warn("Expected positive value for wavelength; got {}",
+					log().warn("Expected positive value for wavelength; got " +
 						wavelengths.get(lasers[i]));
 				}
 
@@ -548,7 +548,7 @@ public class ICSTranslator {
 						OMEXMLMetadataService.class).getLaserType("Other"), 0, i);
 				}
 				catch (final FormatException e) {
-					LOGGER.warn("Failed to set laser type", e);
+					log().warn("Failed to set laser type", e);
 				}
 
 				try {
@@ -556,7 +556,7 @@ public class ICSTranslator {
 						OMEXMLMetadataService.class).getLaserMedium("Other"), 0, i);
 				}
 				catch (final FormatException e) {
-					LOGGER.warn("Failed to set laser medium", e);
+					log().warn("Failed to set laser medium", e);
 				}
 
 				store.setLaserManufacturer(laserManufacturer, 0, i);
@@ -574,14 +574,14 @@ public class ICSTranslator {
 						OMEXMLMetadataService.class).getLaserType("Other"), 0, 0);
 				}
 				catch (final FormatException e) {
-					LOGGER.warn("Failed to set laser type", e);
+					log().warn("Failed to set laser type", e);
 				}
 				try {
 					store.setLaserLaserMedium(getContext().getService(
 						OMEXMLMetadataService.class).getLaserMedium("Other"), 0, 0);
 				}
 				catch (final FormatException e) {
-					LOGGER.warn("Failed to set laser medium", e);
+					log().warn("Failed to set laser medium", e);
 				}
 				store.setLaserManufacturer(laserManufacturer, 0, 0);
 				store.setLaserModel(laserModel, 0, 0);
@@ -646,7 +646,7 @@ public class ICSTranslator {
 					OMEXMLMetadataService.class).getImmersion(immersion), 0, 0);
 			}
 			catch (final FormatException e) {
-				LOGGER.warn("failed to set objective immersion", e);
+				log().warn("failed to set objective immersion", e);
 			}
 			if (lensNA != null) store.setObjectiveLensNA(lensNA, 0, 0);
 			if (workingDistance != null) {
@@ -660,7 +660,7 @@ public class ICSTranslator {
 					OMEXMLMetadataService.class).getCorrection("Other"), 0, 0);
 			}
 			catch (final FormatException e) {
-				LOGGER.warn("Failed to store objective correction", e);
+				log().warn("Failed to store objective correction", e);
 			}
 
 			// link Objective to Image
@@ -687,7 +687,7 @@ public class ICSTranslator {
 					OMEXMLMetadataService.class).getDetectorType("Other"), 0, 0);
 			}
 			catch (final FormatException e) {
-				LOGGER.warn("Failed to store detector type", e);
+				log().warn("Failed to store detector type", e);
 			}
 
 			gains = source.getGains();
@@ -805,7 +805,7 @@ public class ICSTranslator {
 			for (final String exp : expected) {
 				if (actual.equals(exp)) return true; // unit matches expected value
 			}
-			LOGGER.debug("Unexpected unit '{}'; expected '{}'", actual, expected);
+			log().debug("Unexpected unit '"+actual+"'; expected '"+expected+"'");
 			return false;
 		}
 	}

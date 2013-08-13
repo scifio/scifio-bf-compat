@@ -87,7 +87,7 @@ public class BMPTranslator {
 						0);
 				}
 				else {
-					LOGGER.warn("Expected positive value for PhysicalSizeX; got {}",
+					log().warn("Expected positive value for PhysicalSizeX; got " +
 						correctedX);
 				}
 				if (correctedY > 0) {
@@ -95,7 +95,7 @@ public class BMPTranslator {
 						0);
 				}
 				else {
-					LOGGER.warn("Expected positive value for PhysicalSizeY; got {}",
+					log().warn("Expected positive value for PhysicalSizeY; got " +
 						correctedY);
 				}
 			}

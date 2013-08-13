@@ -85,11 +85,11 @@ public class MicromanagerTranslator {
 				populateMetadata(source, dest.getRoot());
 			}
 			catch (final FormatException e) {
-				LOGGER.error(
+				log().error(
 					"Error populating Metadata store with Micromanager metadata", e);
 			}
 			catch (final IOException e) {
-				LOGGER.error(
+				log().error(
 					"Error populating Metadata store with Micromanager metadata", e);
 			}
 		}
@@ -135,7 +135,7 @@ public class MicromanagerTranslator {
 						store.setPixelsPhysicalSizeY(new PositiveFloat(p.pixelSize), i);
 					}
 					else {
-						LOGGER.warn("Expected positive value for PhysicalSizeX; got {}",
+						log().warn("Expected positive value for PhysicalSizeX; got " +
 							p.pixelSize);
 					}
 					if (p.sliceThickness != null && p.sliceThickness > 0) {
@@ -143,7 +143,7 @@ public class MicromanagerTranslator {
 							.setPixelsPhysicalSizeZ(new PositiveFloat(p.sliceThickness), i);
 					}
 					else {
-						LOGGER.warn("Expected positive value for PhysicalSizeZ; got {}",
+						log().warn("Expected positive value for PhysicalSizeZ; got " +
 							p.sliceThickness);
 					}
 

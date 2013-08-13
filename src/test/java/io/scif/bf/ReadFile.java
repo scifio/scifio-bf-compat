@@ -36,7 +36,7 @@ import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
-import net.imglib2.meta.AxisType;
+import net.imglib2.meta.CalibratedAxis;
 
 /**
  * A simple manual test for the SCIFIO Bio-Formats compatibility layer.
@@ -67,7 +67,7 @@ public class ReadFile {
 		for (int i = 0; i < meta.getImageCount(); i++) {
 			System.out.println("image #" + i + " dimensions:");
 			for (int a = 0; a < meta.getAxisCount(i); a++) {
-				final AxisType axisType = meta.getAxisType(i, a);
+				final CalibratedAxis axisType = meta.getAxisType(i, a);
 				final int axisLength = meta.getAxisLength(i, a);
 				System.out.println("\t" + axisLength + " : " + axisType);
 			}
