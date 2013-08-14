@@ -59,7 +59,8 @@ public class ReadFile {
 		IOException
 	{
 		final SCIFIO scifio = new SCIFIO();
-		final Format format = scifio.format().getFormat(file.getAbsolutePath());
+		final Format format =
+			scifio.format().getFormat(file.getAbsolutePath(), true);
 		System.out.println("file = " + file);
 		System.out.println("format = " + format.getFormatName());
 		final Parser parser = format.createParser();
