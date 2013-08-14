@@ -60,6 +60,7 @@ import ome.xml.model.enums.handlers.LaserMediumEnumHandler;
 import ome.xml.model.enums.handlers.LaserTypeEnumHandler;
 import ome.xml.model.primitives.NonNegativeInteger;
 import ome.xml.model.primitives.NonNegativeLong;
+import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
 import ome.xml.model.primitives.Timestamp;
 
@@ -136,10 +137,15 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 			final int zSize = meta.getAxisLength(i, Axes.Z);
 			final int cSize = meta.getAxisLength(i, Axes.CHANNEL);
 			final int tSize = meta.getAxisLength(i, Axes.TIME);
+			final double calX = meta.getAxis(i, Axes.X).calibration();
+			final double calY = meta.getAxis(i, Axes.X).calibration();
+			final double calZ = meta.getAxis(i, Axes.X).calibration();
+			final double calC = meta.getAxis(i, Axes.X).calibration();
+			final double calT = meta.getAxis(i, Axes.X).calibration();
 
 			populateMetadata(store, meta.getDatasetName(), i, imageName, meta
 				.isLittleEndian(i), order, pixelType, xSize, ySize, zSize, cSize,
-				tSize, meta.getRGBChannelCount(i));
+				tSize, calX, calY, calZ, calC, calT, meta.getRGBChannelCount(i));
 
 			final OMEXMLService service =
 				formatService.getInstance(OMEXMLService.class);
@@ -182,11 +188,12 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		final String imageName, final boolean littleEndian,
 		final String dimensionOrder, final String pixelType, final int sizeX,
 		final int sizeY, final int sizeZ, final int sizeC, final int sizeT,
-		final int samplesPerPixel)
+		final double calX, final double calY, final double calZ, final double calC,
+		final double calT, final int samplesPerPixel)
 	{
 		populateMetadata(store, null, imageIndex, imageName, littleEndian,
-			dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT,
-			samplesPerPixel);
+			dimensionOrder, pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, calX, calY,
+			calZ, calC, calT, samplesPerPixel);
 	}
 
 	/*
@@ -202,15 +209,20 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		final int sizeZ = meta.getAxisLength(imageIndex, Axes.Z);
 		final int sizeC = meta.getAxisLength(imageIndex, Axes.CHANNEL);
 		final int sizeT = meta.getAxisLength(imageIndex, Axes.TIME);
-
+		final double calX = meta.getAxis(imageIndex, Axes.X).calibration();
+		final double calY = meta.getAxis(imageIndex, Axes.X).calibration();
+		final double calZ = meta.getAxis(imageIndex, Axes.X).calibration();
+		final double calC = meta.getAxis(imageIndex, Axes.X).calibration();
+		final double calT = meta.getAxis(imageIndex, Axes.X).calibration();
+		
 		final String pixelType =
 			FormatTools.getPixelTypeString(meta.getPixelType(imageIndex));
 		final int effSizeC = meta.getPlaneCount(imageIndex) / sizeZ / sizeT;
 		final int samplesPerPixel = sizeC / effSizeC;
 		populateMetadata(store, null, imageIndex, imageName, meta
 			.isLittleEndian(imageIndex), FormatTools.findDimensionOrder(meta,
-			imageIndex), pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT,
-			samplesPerPixel);
+			imageIndex), pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, calX, calY,
+			calZ, calC, calT, samplesPerPixel);
 	}
 
 	/*
@@ -223,13 +235,15 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		final int imageIndex, final String imageName, final boolean littleEndian,
 		final String dimensionOrder, final String pixelType, final int sizeX,
 		final int sizeY, final int sizeZ, final int sizeC, final int sizeT,
-		final int samplesPerPixel)
+		final double calX, final double calY, final double calZ, final double calC,
+		final double calT, final int samplesPerPixel)
 	{
 		store.setImageID(createLSID("Image", imageIndex), imageIndex);
 		setDefaultCreationDate(store, file, imageIndex);
 		if (imageName != null) store.setImageName(imageName, imageIndex);
 		populatePixelsOnly(store, imageIndex, littleEndian, dimensionOrder,
-			pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
+			pixelType, sizeX, sizeY, sizeZ, sizeC, sizeT, calX, calY, calZ, calC,
+			calT, samplesPerPixel);
 	}
 
 	/*
@@ -248,7 +262,11 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 					.getAxisLength(imageIndex, Axes.X), dMeta.getAxisLength(imageIndex,
 					Axes.Y), dMeta.getAxisLength(imageIndex, Axes.Z), dMeta
 					.getAxisLength(imageIndex, Axes.CHANNEL), dMeta.getAxisLength(
-					imageIndex, Axes.TIME), dMeta.getRGBChannelCount(imageIndex));
+					imageIndex, Axes.TIME), dMeta.getAxis(imageIndex, Axes.X)
+					.calibration(), dMeta.getAxis(imageIndex, Axes.Y).calibration(),
+					dMeta.getAxis(imageIndex, Axes.Z).calibration(), dMeta.getAxis(
+					imageIndex, Axes.CHANNEL).calibration(), dMeta.getAxis(imageIndex,
+					Axes.TIME).calibration(), dMeta.getRGBChannelCount(imageIndex));
 		}
 	}
 
@@ -261,7 +279,8 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		final int imageIndex, final boolean littleEndian,
 		final String dimensionOrder, final String pixelType, final int sizeX,
 		final int sizeY, final int sizeZ, final int sizeC, final int sizeT,
-		final int samplesPerPixel)
+		final double calX, final double calY, final double calZ, final double calC,
+		final double calT, final int samplesPerPixel)
 	{
 		store.setPixelsID(createLSID("Pixels", imageIndex), imageIndex);
 		store.setPixelsBinDataBigEndian(!littleEndian, imageIndex, 0);
@@ -558,5 +577,15 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		if (rgbCCount > 1) iMeta.setRGB(true);
 
 		iMeta.setPlaneCount(sizeZ * (sizeC / rgbCCount) * sizeT);
+		
+		final PositiveFloat physX = retrieve.getPixelsPhysicalSizeX(imageIndex);
+		final PositiveFloat physY = retrieve.getPixelsPhysicalSizeY(imageIndex);
+		final PositiveFloat physZ = retrieve.getPixelsPhysicalSizeZ(imageIndex);
+		final Double physT = retrieve.getPixelsTimeIncrement(imageIndex);
+		
+		if (physX != null) iMeta.getAxis(Axes.X).setCalibration(physX.getValue());
+		if (physY != null) iMeta.getAxis(Axes.Y).setCalibration(physY.getValue());
+		if (physZ != null) iMeta.getAxis(Axes.Z).setCalibration(physZ.getValue());
+		if (physT != null) iMeta.getAxis(Axes.TIME).setCalibration(physT);
 	}
 }

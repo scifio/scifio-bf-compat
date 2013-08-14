@@ -93,7 +93,8 @@ public interface OMEXMLMetadataService extends Service {
 	 */
 	void populateMetadata(MetadataStore store, int imageIndex, String imageName,
 		boolean littleEndian, String dimensionOrder, String pixelType, int sizeX,
-		int sizeY, int sizeZ, int sizeC, int sizeT, int samplesPerPixel);
+		int sizeY, int sizeZ, int sizeC, int sizeT, double calX, double claY,
+		double calZ, double calC, double calT, int samplesPerPixel);
 
 	/**
 	 * Populates the given {@link MetadataStore}, for the specified imageIndex,
@@ -119,13 +120,15 @@ public interface OMEXMLMetadataService extends Service {
 	void populateMetadata(MetadataStore store, String file, int imageIndex,
 		String imageName, boolean littleEndian, String dimensionOrder,
 		String pixelType, int sizeX, int sizeY, int sizeZ, int sizeC, int sizeT,
+		double calX, double claY, double calZ, double calC, double calT,
 		int samplesPerPixel);
 
 	void populatePixelsOnly(MetadataStore store, Reader r);
 
 	void populatePixelsOnly(MetadataStore store, int imageIndex,
 		boolean littleEndian, String dimensionOrder, String pixelType, int sizeX,
-		int sizeY, int sizeZ, int sizeC, int sizeT, int samplesPerPixel);
+		int sizeY, int sizeZ, int sizeC, int sizeT, double calX, double claY,
+		double calZ, double calC, double calT, int samplesPerPixel);
 
 	/**
 	 * Disables the setting of a default creation date. By default, missing

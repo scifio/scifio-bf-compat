@@ -155,7 +155,8 @@ public class APNGTranslator {
 
 			getContext().getService(OMEXMLMetadataService.class).populateMetadata(
 				dest.getRoot(), series, imageName, littleEndian, dimOrder, pixelType,
-				sizeX, sizeY, sizeZ, sizeC, sizeT, samplesPerPixel);
+				sizeX, sizeY, sizeZ, sizeC, sizeT, 1.0, 1.0, 1.0, 1.0, 1.0,
+				samplesPerPixel);
 
 			if (source.getFctl() != null && source.getFctl().size() > 0) dest
 				.getRoot().setPixelsTimeIncrement(
