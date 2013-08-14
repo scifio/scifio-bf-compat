@@ -75,10 +75,12 @@ public class BioFormatsFormat extends AbstractFormat {
     "loci.formats.in.AVIReader",
     "loci.formats.in.BMPReader",
     "loci.formats.in.DicomReader",
+    "loci.formats.in.EPSReader",
     "loci.formats.in.FakeReader",
     "loci.formats.in.FitsReader",
     "loci.formats.in.GIFReader",
     "loci.formats.in.ICSReader",
+    "loci.formats.in.JPEGReader",
     "loci.formats.in.JPEG2000Reader",
     "loci.formats.in.MicromanagerReader",
     "loci.formats.in.MinimalTiffReader",
@@ -94,6 +96,7 @@ public class BioFormatsFormat extends AbstractFormat {
     "loci.formats.in.SCIFIOReader",
     "loci.formats.in.TextReader",
     "loci.formats.in.TiffDelegateReader",
+    "loci.formats.in.TileJPEGReader",
     "loci.formats.in.ZipReader"
   };
 
