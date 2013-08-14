@@ -142,8 +142,9 @@ public class APNGTranslator {
 						.getIhdr().getBitDepth() / 8, false, false));
 			}
 			catch (final FormatException e) {
-				log().debug("Failed to find pixel type from bytes: " +
-					(source.getIhdr().getBitDepth() / 8), e);
+				log().debug(
+					"Failed to find pixel type from bytes: " +
+						(source.getIhdr().getBitDepth() / 8), e);
 			}
 			final boolean littleEndian = false;
 			final int series = 0;

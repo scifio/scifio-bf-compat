@@ -93,8 +93,8 @@ public class NRRDTranslator {
 								}
 							}
 							else {
-								log().warn("Expected positive value for PhysicalSize; got " +
-									d);
+								log()
+									.warn("Expected positive value for PhysicalSize; got " + d);
 							}
 						}
 						catch (final NumberFormatException e) {}

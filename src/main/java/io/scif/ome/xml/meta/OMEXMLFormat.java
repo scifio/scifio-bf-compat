@@ -736,7 +736,7 @@ public class OMEXMLFormat extends AbstractFormat {
 
 	private static class OMEXMLHandler extends BaseHandler {
 
-		private XMLService xmlService;
+		private final XMLService xmlService;
 
 		private final StringBuffer xmlBuffer;
 		private String currentQName;

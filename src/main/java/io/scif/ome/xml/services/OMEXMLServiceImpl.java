@@ -86,20 +86,20 @@ import org.xml.sax.SAXException;
 @Plugin(type = OMEXMLService.class)
 public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 {
-	
-	public static String URL_BIO_FORMATS_LIBRARY = 
-			"http://www.openmicroscopy.org/site/support/bio-formats4/developers/java-library.html";
+
+	public static String URL_BIO_FORMATS_LIBRARY =
+		"http://www.openmicroscopy.org/site/support/bio-formats4/developers/java-library.html";
 
 	@Parameter
 	OMEXMLMetadataService omexmlMetadataService;
-	
+
 	@Parameter
 	XMLService xmlService;
 
 	public static final String NO_OME_XML_MSG =
 		"ome-xml.jar is required to read OME-TIFF files.  " +
 			"Please download it from " + URL_BIO_FORMATS_LIBRARY;
-				
+
 	/** Logger for this class. */
 	private static final Logger LOGGER = LoggerFactory
 		.getLogger(OMEXMLService.class);

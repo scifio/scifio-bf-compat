@@ -379,9 +379,10 @@ public class ICSTranslator {
 								store.setPixelsPhysicalSizeX(new PositiveFloat(pixelSize), 0);
 							}
 							else {
-								log().warn(
-									"Expected positive value for PhysicalSizeX; got " +
-									pixelSize);
+								log()
+									.warn(
+										"Expected positive value for PhysicalSizeX; got " +
+											pixelSize);
 							}
 						}
 						else if (axis.equals("y")) {
@@ -391,9 +392,10 @@ public class ICSTranslator {
 								store.setPixelsPhysicalSizeY(new PositiveFloat(pixelSize), 0);
 							}
 							else {
-								log().warn(
-									"Expected positive value for PhysicalSizeY; got " +
-									pixelSize);
+								log()
+									.warn(
+										"Expected positive value for PhysicalSizeY; got " +
+											pixelSize);
 							}
 						}
 						else if (axis.equals("z")) {
@@ -403,9 +405,10 @@ public class ICSTranslator {
 								store.setPixelsPhysicalSizeZ(new PositiveFloat(pixelSize), 0);
 							}
 							else {
-								log().warn(
-									"Expected positive value for PhysicalSizeZ; got " +
-									pixelSize);
+								log()
+									.warn(
+										"Expected positive value for PhysicalSizeZ; got " +
+											pixelSize);
 							}
 						}
 						else if (axis.equals("t")) {
@@ -423,8 +426,8 @@ public class ICSTranslator {
 						store.setPixelsPhysicalSizeX(new PositiveFloat(sizes[0]), 0);
 					}
 					else {
-						log().warn("Expected positive value for PhysicalSizeX; got " +
-							sizes[0]);
+						log().warn(
+							"Expected positive value for PhysicalSizeX; got " + sizes[0]);
 					}
 					if (sizes.length > 1) {
 						sizes[1] /= source.getAxisLength(imageIndex, Axes.Y);
@@ -432,8 +435,8 @@ public class ICSTranslator {
 							store.setPixelsPhysicalSizeY(new PositiveFloat(sizes[1]), 0);
 						}
 						else {
-							log().warn("Expected positive value for PhysicalSizeY; got " +
-								sizes[1]);
+							log().warn(
+								"Expected positive value for PhysicalSizeY; got " + sizes[1]);
 						}
 					}
 				}
@@ -500,7 +503,7 @@ public class ICSTranslator {
 					else {
 						log().warn(
 							"Expected positive value for EmissionWavelength; got " +
-							emWaves[i]);
+								emWaves[i]);
 					}
 				}
 				if (exWaves != null && i < exWaves.length) {
@@ -511,7 +514,7 @@ public class ICSTranslator {
 					else {
 						log().warn(
 							"Expected positive value for ExcitationWavelength; got " +
-							exWaves[i]);
+								exWaves[i]);
 					}
 				}
 			}
@@ -539,8 +542,9 @@ public class ICSTranslator {
 						.get(lasers[i])), 0, i);
 				}
 				else {
-					log().warn("Expected positive value for wavelength; got " +
-						wavelengths.get(lasers[i]));
+					log().warn(
+						"Expected positive value for wavelength; got " +
+							wavelengths.get(lasers[i]));
 				}
 
 				try {
@@ -805,7 +809,8 @@ public class ICSTranslator {
 			for (final String exp : expected) {
 				if (actual.equals(exp)) return true; // unit matches expected value
 			}
-			log().debug("Unexpected unit '"+actual+"'; expected '"+expected+"'");
+			log().debug(
+				"Unexpected unit '" + actual + "'; expected '" + expected + "'");
 			return false;
 		}
 	}

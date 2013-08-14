@@ -32,234 +32,240 @@ import java.nio.ByteBuffer;
  * Wrapper class to convert {@link io.scif.io.RandomAccessInputStream} to
  * {@link loci.common.RandomAccessInputStream}.
  */
-public class RandomAccessInputStreamWrapper
-  extends loci.common.RandomAccessInputStream
+public class RandomAccessInputStreamWrapper extends
+	loci.common.RandomAccessInputStream
 {
 
-  // -- Fields --
+	// -- Fields --
 
-  private io.scif.io.RandomAccessInputStream rais;
+	private final io.scif.io.RandomAccessInputStream rais;
 
-  // -- Constructors --
+	// -- Constructors --
 
-  public RandomAccessInputStreamWrapper(io.scif.io.RandomAccessInputStream rais)
-    throws IOException
-  {
-    super((String)null);
-    this.rais = rais;
-  }
+	public RandomAccessInputStreamWrapper(
+		final io.scif.io.RandomAccessInputStream rais) throws IOException
+	{
+		super((String) null);
+		this.rais = rais;
+	}
 
-  // -- RandomAccessInputStreamWrapper API Methods --
+	// -- RandomAccessInputStreamWrapper API Methods --
 
-  public io.scif.io.RandomAccessInputStream unwrap() {
-    return rais;
-  }
+	public io.scif.io.RandomAccessInputStream unwrap() {
+		return rais;
+	}
 
-  // -- RandomAccessInputStream API methods --
+	// -- RandomAccessInputStream API methods --
 
-  @Override
-  public void setEncoding(String encoding) {
-    unwrap().setEncoding(encoding);
-  }
+	@Override
+	public void setEncoding(final String encoding) {
+		unwrap().setEncoding(encoding);
+	}
 
-  @Override
-  public void seek(long pos) throws IOException {
-    unwrap().seek(pos);
-  }
+	@Override
+	public void seek(final long pos) throws IOException {
+		unwrap().seek(pos);
+	}
 
-  @Override
-  public long length() throws IOException {
-    return unwrap().length();
-  }
+	@Override
+	public long length() throws IOException {
+		return unwrap().length();
+	}
 
-  @Override
-  public void setLength(long newLength) throws IOException {
-    unwrap().setLength(newLength);
-  }
+	@Override
+	public void setLength(final long newLength) throws IOException {
+		unwrap().setLength(newLength);
+	}
 
-  @Override
-  public long getFilePointer() throws IOException {
-    return unwrap().getFilePointer();
-  }
+	@Override
+	public long getFilePointer() throws IOException {
+		return unwrap().getFilePointer();
+	}
 
-  @Override
-  public void close() throws IOException {
-    unwrap().close();
-  }
+	@Override
+	public void close() throws IOException {
+		unwrap().close();
+	}
 
-  @Override
-  public void order(boolean little) {
-    unwrap().order(little);
-  }
+	@Override
+	public void order(final boolean little) {
+		unwrap().order(little);
+	}
 
-  @Override
-  public boolean isLittleEndian() {
-    return unwrap().isLittleEndian();
-  }
+	@Override
+	public boolean isLittleEndian() {
+		return unwrap().isLittleEndian();
+	}
 
-  @Override
-  public String readString(String lastChars) throws IOException {
-    return unwrap().readString(lastChars);
-  }
+	@Override
+	public String readString(final String lastChars) throws IOException {
+		return unwrap().readString(lastChars);
+	}
 
-  @Override
-  public String findString(String... terminators) throws IOException {
-    return unwrap().findString(terminators);
-  }
+	@Override
+	public String findString(final String... terminators) throws IOException {
+		return unwrap().findString(terminators);
+	}
 
-  @Override
-  public String findString(boolean saveString, String... terminators)
-      throws IOException
-      {
-    return unwrap().findString(saveString, terminators);
-      }
+	@Override
+	public String findString(final boolean saveString,
+		final String... terminators) throws IOException
+	{
+		return unwrap().findString(saveString, terminators);
+	}
 
-  @Override
-  public String findString(int blockSize, String... terminators)
-      throws IOException
-      {
-    return unwrap().findString(blockSize, terminators);
-      }
+	@Override
+	public String findString(final int blockSize, final String... terminators)
+		throws IOException
+	{
+		return unwrap().findString(blockSize, terminators);
+	}
 
-  @Override
-  public String findString(boolean saveString, int blockSize,
-      String... terminators) throws IOException
-      {
-    return unwrap().findString(saveString, blockSize, terminators);
-      }
+	@Override
+	public String findString(final boolean saveString, final int blockSize,
+		final String... terminators) throws IOException
+	{
+		return unwrap().findString(saveString, blockSize, terminators);
+	}
 
-  // -- DataInput API methods --
+	// -- DataInput API methods --
 
-  @Override
-  public boolean readBoolean() throws IOException {
-    return unwrap().readBoolean();
-  }
+	@Override
+	public boolean readBoolean() throws IOException {
+		return unwrap().readBoolean();
+	}
 
-  @Override
-  public byte readByte() throws IOException {
-    return unwrap().readByte();
-  }
+	@Override
+	public byte readByte() throws IOException {
+		return unwrap().readByte();
+	}
 
-  @Override
-  public char readChar() throws IOException {
-    return unwrap().readChar();
-  }
+	@Override
+	public char readChar() throws IOException {
+		return unwrap().readChar();
+	}
 
-  @Override
-  public double readDouble() throws IOException {
-    return unwrap().readDouble();
-  }
+	@Override
+	public double readDouble() throws IOException {
+		return unwrap().readDouble();
+	}
 
-  @Override
-  public float readFloat() throws IOException {
-    return unwrap().readFloat();
-  }
+	@Override
+	public float readFloat() throws IOException {
+		return unwrap().readFloat();
+	}
 
-  @Override
-  public int readInt() throws IOException {
-    return unwrap().readInt();
-  }
+	@Override
+	public int readInt() throws IOException {
+		return unwrap().readInt();
+	}
 
-  @Override
-  public String readLine() throws IOException {
-    return unwrap().readLine();
-  }
+	@Override
+	public String readLine() throws IOException {
+		return unwrap().readLine();
+	}
 
-  @Override
-  public String readCString() throws IOException {
-    return unwrap().readCString();
-  }
+	@Override
+	public String readCString() throws IOException {
+		return unwrap().readCString();
+	}
 
-  @Override
-  public String readString(int n) throws IOException {
-    return unwrap().readString(n);
-  }
+	@Override
+	public String readString(final int n) throws IOException {
+		return unwrap().readString(n);
+	}
 
-  @Override
-  public long readLong() throws IOException {
-    return unwrap().readLong();
-  }
+	@Override
+	public long readLong() throws IOException {
+		return unwrap().readLong();
+	}
 
-  @Override
-  public short readShort() throws IOException {
-    return unwrap().readShort();
-  }
+	@Override
+	public short readShort() throws IOException {
+		return unwrap().readShort();
+	}
 
-  @Override
-  public int readUnsignedByte() throws IOException {
-    return unwrap().readUnsignedByte();
-  }
+	@Override
+	public int readUnsignedByte() throws IOException {
+		return unwrap().readUnsignedByte();
+	}
 
-  @Override
-  public int readUnsignedShort() throws IOException {
-    return unwrap().readUnsignedShort();
-  }
+	@Override
+	public int readUnsignedShort() throws IOException {
+		return unwrap().readUnsignedShort();
+	}
 
-  @Override
-  public String readUTF() throws IOException {
-    return unwrap().readUTF();
-  }
+	@Override
+	public String readUTF() throws IOException {
+		return unwrap().readUTF();
+	}
 
-  @Override
-  public int skipBytes(int n) throws IOException {
-    return unwrap().skipBytes(n);
-  }
+	@Override
+	public int skipBytes(final int n) throws IOException {
+		return unwrap().skipBytes(n);
+	}
 
-  @Override
-  public int read(byte[] array) throws IOException {
-    return unwrap().read(array);
-  }
+	@Override
+	public int read(final byte[] array) throws IOException {
+		return unwrap().read(array);
+	}
 
-  @Override
-  public int read(byte[] array, int offset, int n) throws IOException {
-    return unwrap().read(array, offset, n);
-  }
+	@Override
+	public int read(final byte[] array, final int offset, final int n)
+		throws IOException
+	{
+		return unwrap().read(array, offset, n);
+	}
 
-  @Override
-  public int read(ByteBuffer buf) throws IOException {
-    return unwrap().read(buf);
-  }
+	@Override
+	public int read(final ByteBuffer buf) throws IOException {
+		return unwrap().read(buf);
+	}
 
-  @Override
-  public int read(ByteBuffer buf, int offset, int n) throws IOException {
-    return unwrap().read(buf, offset, n);
-  }
+	@Override
+	public int read(final ByteBuffer buf, final int offset, final int n)
+		throws IOException
+	{
+		return unwrap().read(buf, offset, n);
+	}
 
-  @Override
-  public void readFully(byte[] array) throws IOException {
-    unwrap().readFully(array);
-  }
+	@Override
+	public void readFully(final byte[] array) throws IOException {
+		unwrap().readFully(array);
+	}
 
-  @Override
-  public void readFully(byte[] array, int offset, int n) throws IOException {
-    unwrap().readFully(array, offset, n);
-  }
+	@Override
+	public void readFully(final byte[] array, final int offset, final int n)
+		throws IOException
+	{
+		unwrap().readFully(array, offset, n);
+	}
 
-  // -- InputStream API methods --
+	// -- InputStream API methods --
 
-  @Override
-  public int read() throws IOException {
-    return unwrap().read();
-  }
+	@Override
+	public int read() throws IOException {
+		return unwrap().read();
+	}
 
-  @Override
-  public int available() throws IOException {
-    return unwrap().available();
-  }
+	@Override
+	public int available() throws IOException {
+		return unwrap().available();
+	}
 
-  @Override
-  public void mark(int readLimit) {
-    unwrap().mark(readLimit);
-  }
+	@Override
+	public void mark(final int readLimit) {
+		unwrap().mark(readLimit);
+	}
 
-  @Override
-  public boolean markSupported() {
-    return unwrap().markSupported();
-  }
+	@Override
+	public boolean markSupported() {
+		return unwrap().markSupported();
+	}
 
-  @Override
-  public void reset() throws IOException {
-    unwrap().reset();
-  }
+	@Override
+	public void reset() throws IOException {
+		unwrap().reset();
+	}
 
 }

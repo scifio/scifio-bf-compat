@@ -214,7 +214,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		final double calZ = meta.getAxis(imageIndex, Axes.X).calibration();
 		final double calC = meta.getAxis(imageIndex, Axes.X).calibration();
 		final double calT = meta.getAxis(imageIndex, Axes.X).calibration();
-		
+
 		final String pixelType =
 			FormatTools.getPixelTypeString(meta.getPixelType(imageIndex));
 		final int effSizeC = meta.getPlaneCount(imageIndex) / sizeZ / sizeT;
@@ -264,7 +264,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 					.getAxisLength(imageIndex, Axes.CHANNEL), dMeta.getAxisLength(
 					imageIndex, Axes.TIME), dMeta.getAxis(imageIndex, Axes.X)
 					.calibration(), dMeta.getAxis(imageIndex, Axes.Y).calibration(),
-					dMeta.getAxis(imageIndex, Axes.Z).calibration(), dMeta.getAxis(
+				dMeta.getAxis(imageIndex, Axes.Z).calibration(), dMeta.getAxis(
 					imageIndex, Axes.CHANNEL).calibration(), dMeta.getAxis(imageIndex,
 					Axes.TIME).calibration(), dMeta.getRGBChannelCount(imageIndex));
 		}
@@ -577,12 +577,12 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		if (rgbCCount > 1) iMeta.setRGB(true);
 
 		iMeta.setPlaneCount(sizeZ * (sizeC / rgbCCount) * sizeT);
-		
+
 		final PositiveFloat physX = retrieve.getPixelsPhysicalSizeX(imageIndex);
 		final PositiveFloat physY = retrieve.getPixelsPhysicalSizeY(imageIndex);
 		final PositiveFloat physZ = retrieve.getPixelsPhysicalSizeZ(imageIndex);
 		final Double physT = retrieve.getPixelsTimeIncrement(imageIndex);
-		
+
 		if (physX != null) iMeta.getAxis(Axes.X).setCalibration(physX.getValue());
 		if (physY != null) iMeta.getAxis(Axes.Y).setCalibration(physY.getValue());
 		if (physZ != null) iMeta.getAxis(Axes.Z).setCalibration(physZ.getValue());

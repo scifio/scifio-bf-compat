@@ -135,16 +135,17 @@ public class MicromanagerTranslator {
 						store.setPixelsPhysicalSizeY(new PositiveFloat(p.pixelSize), i);
 					}
 					else {
-						log().warn("Expected positive value for PhysicalSizeX; got " +
-							p.pixelSize);
+						log().warn(
+							"Expected positive value for PhysicalSizeX; got " + p.pixelSize);
 					}
 					if (p.sliceThickness != null && p.sliceThickness > 0) {
 						store
 							.setPixelsPhysicalSizeZ(new PositiveFloat(p.sliceThickness), i);
 					}
 					else {
-						log().warn("Expected positive value for PhysicalSizeZ; got " +
-							p.sliceThickness);
+						log().warn(
+							"Expected positive value for PhysicalSizeZ; got " +
+								p.sliceThickness);
 					}
 
 					int nextStamp = 0;

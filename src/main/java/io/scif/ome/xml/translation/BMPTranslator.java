@@ -87,16 +87,16 @@ public class BMPTranslator {
 						0);
 				}
 				else {
-					log().warn("Expected positive value for PhysicalSizeX; got " +
-						correctedX);
+					log().warn(
+						"Expected positive value for PhysicalSizeX; got " + correctedX);
 				}
 				if (correctedY > 0) {
 					dest.getRoot().setPixelsPhysicalSizeY(new PositiveFloat(correctedY),
 						0);
 				}
 				else {
-					log().warn("Expected positive value for PhysicalSizeY; got " +
-						correctedY);
+					log().warn(
+						"Expected positive value for PhysicalSizeY; got " + correctedY);
 				}
 			}
 		}
