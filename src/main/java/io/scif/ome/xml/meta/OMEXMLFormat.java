@@ -736,7 +736,6 @@ public class OMEXMLFormat extends AbstractFormat {
 
 	private static class OMEXMLHandler extends BaseHandler {
 
-		@Parameter
 		private XMLService xmlService;
 
 		private final StringBuffer xmlBuffer;
@@ -748,6 +747,7 @@ public class OMEXMLFormat extends AbstractFormat {
 			super(new StderrLogService());
 			xmlBuffer = new StringBuffer();
 			this.meta = meta;
+			xmlService = meta.getContext().getService(XMLService.class);
 		}
 
 		@Override
