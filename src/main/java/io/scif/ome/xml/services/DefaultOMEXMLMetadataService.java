@@ -207,10 +207,10 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		final int sizeC = meta.getAxisLength(imageIndex, Axes.CHANNEL);
 		final int sizeT = meta.getAxisLength(imageIndex, Axes.TIME);
 		final double calX = meta.getAxis(imageIndex, Axes.X).calibration();
-		final double calY = meta.getAxis(imageIndex, Axes.X).calibration();
-		final double calZ = meta.getAxis(imageIndex, Axes.X).calibration();
-		final double calC = meta.getAxis(imageIndex, Axes.X).calibration();
-		final double calT = meta.getAxis(imageIndex, Axes.X).calibration();
+		final double calY = meta.getAxis(imageIndex, Axes.Y).calibration();
+		final double calZ = meta.getAxis(imageIndex, Axes.Z).calibration();
+		final double calC = meta.getAxis(imageIndex, Axes.CHANNEL).calibration();
+		final double calT = meta.getAxis(imageIndex, Axes.TIME).calibration();
 
 		final String pixelType =
 			FormatTools.getPixelTypeString(meta.getPixelType(imageIndex));
