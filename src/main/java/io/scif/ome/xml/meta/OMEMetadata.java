@@ -53,10 +53,6 @@ public class OMEMetadata extends AbstractMetadata {
 
 	// -- Constructor --
 
-	public OMEMetadata() {
-		this(null);
-	}
-
 	public OMEMetadata(final Context context) {
 		this(context, null);
 	}
