@@ -299,17 +299,14 @@ public class BioFormatsFormat extends AbstractFormat {
 		for (int i = 0; i < dimOrder.length(); i++) {
 			switch (dimOrder.charAt(i)) {
 				case 'X':
-					if (reader.getSizeX() <= 1) continue;
 					axisTypes.add(FormatTools.calibrate(Axes.X));
 					axisLengths.add(reader.getSizeX());
 					break;
 				case 'Y':
-					if (reader.getSizeY() <= 1) continue;
 					axisTypes.add(FormatTools.calibrate(Axes.Y));
 					axisLengths.add(reader.getSizeY());
 					break;
 				case 'Z':
-					if (reader.getSizeZ() <= 1) continue;
 					axisTypes.add(FormatTools.calibrate(Axes.Z));
 					axisLengths.add(reader.getSizeZ());
 					break;
@@ -318,7 +315,6 @@ public class BioFormatsFormat extends AbstractFormat {
 					parseChannelDimensions(reader, false, axisTypes, axisLengths);
 					break;
 				case 'T':
-					if (reader.getSizeT() <= 1) continue;
 					axisTypes.add(FormatTools.calibrate(Axes.TIME));
 					axisLengths.add(reader.getSizeT());
 					break;
@@ -361,7 +357,6 @@ public class BioFormatsFormat extends AbstractFormat {
 		final int[] cDimLengths = reader.getChannelDimLengths();
 		final String[] cDimTypes = reader.getChannelDimTypes();
 		for (int subC = 0; subC < cDimLengths.length; subC++) {
-			if (cDimLengths[subC] <= 1) continue;
 			if (interleaved != reader.isInterleaved(subC)) continue;
 			axisTypes.add(FormatTools.calibrate(Axes.get(cDimTypes[subC])));
 			axisLengths.add(cDimLengths[subC]);
