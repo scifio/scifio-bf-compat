@@ -299,6 +299,10 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 		store.setPixelsSizeZ(new PositiveInteger(sizeZ), imageIndex);
 		store.setPixelsSizeC(new PositiveInteger(sizeC), imageIndex);
 		store.setPixelsSizeT(new PositiveInteger(sizeT), imageIndex);
+		store.setPixelsPhysicalSizeX(new PositiveFloat(calX), imageIndex);
+		store.setPixelsPhysicalSizeY(new PositiveFloat(calY), imageIndex);
+		store.setPixelsPhysicalSizeZ(new PositiveFloat(calZ), imageIndex);
+		store.setPixelsTimeIncrement(calT, imageIndex);
 		final int effSizeC = sizeC / samplesPerPixel;
 		for (int i = 0; i < effSizeC; i++) {
 			store.setChannelID(createLSID("Channel", imageIndex, i), imageIndex, i);
