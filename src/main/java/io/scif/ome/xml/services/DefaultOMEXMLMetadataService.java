@@ -64,12 +64,11 @@ import ome.xml.model.primitives.PositiveFloat;
 import ome.xml.model.primitives.PositiveInteger;
 import ome.xml.model.primitives.Timestamp;
 
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
 import org.scijava.service.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Default implementation of {@link OMEXMLMetadataService}.
@@ -79,11 +78,6 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 	OMEXMLMetadataService
 {
 
-	// -- Constants --
-
-	private static final Logger LOGGER = LoggerFactory
-		.getLogger(DefaultOMEXMLMetadataService.class);
-
 	// -- Static fields --
 
 	private boolean defaultDateEnabled = true;
@@ -92,6 +86,9 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 
 	@Parameter
 	private FormatService formatService;
+	
+	@Parameter
+	private LogService logService;
 
 	// -- Utility methods - OME-XML --
 
@@ -158,7 +155,7 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 						omeMeta.resolveReferences();
 					}
 					catch (final ServiceException e) {
-						LOGGER.warn("Failed to resolve references", e);
+						logService.warn("Failed to resolve references", e);
 					}
 				}
 
@@ -289,13 +286,13 @@ public class DefaultOMEXMLMetadataService extends AbstractService implements
 				imageIndex);
 		}
 		catch (final EnumerationException e) {
-			LOGGER.warn("Invalid dimension order: " + dimensionOrder, e);
+			logService.warn("Invalid dimension order: " + dimensionOrder, e);
 		}
 		try {
 			store.setPixelsType(PixelType.fromString(pixelType), imageIndex);
 		}
 		catch (final EnumerationException e) {
-			LOGGER.warn("Invalid pixel type: " + pixelType, e);
+			logService.warn("Invalid pixel type: " + pixelType, e);
 		}
 		store.setPixelsSizeX(new PositiveInteger(sizeX), imageIndex);
 		store.setPixelsSizeY(new PositiveInteger(sizeY), imageIndex);

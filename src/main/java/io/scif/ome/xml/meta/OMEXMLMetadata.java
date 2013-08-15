@@ -25,6 +25,7 @@
 
 package io.scif.ome.xml.meta;
 
+import io.scif.SCIFIOComponent;
 import loci.formats.meta.IMetadata;
 
 /**
@@ -40,7 +41,7 @@ import loci.formats.meta.IMetadata;
  * 
  * @author Chris Allan callan at blackcat dot ca
  */
-public interface OMEXMLMetadata extends IMetadata {
+public interface OMEXMLMetadata extends IMetadata, SCIFIOComponent {
 
 	/**
 	 * Dumps the given OME-XML DOM tree to a string.

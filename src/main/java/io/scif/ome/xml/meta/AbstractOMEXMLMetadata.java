@@ -25,6 +25,7 @@
 
 package io.scif.ome.xml.meta;
 
+import io.scif.AbstractSCIFIOComponent;
 import io.scif.common.Constants;
 
 import java.io.ByteArrayOutputStream;
@@ -39,8 +40,6 @@ import ome.xml.DOMUtil;
 import ome.xml.model.OME;
 import ome.xml.model.OMEModelObject;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 
@@ -60,7 +59,9 @@ import org.w3c.dom.Element;
  * @author Curtis Rueden ctrueden at wisc.edu
  * @author Melissa Linkert melissa at glencoesoftware.com
  */
-public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
+public abstract class AbstractOMEXMLMetadata extends AbstractSCIFIOComponent
+	implements OMEXMLMetadata
+{
 
 	// -- Constants --
 
@@ -72,9 +73,6 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
 	public static final String SCHEMA =
 	// "http://www.openmicroscopy.org/Schemas/OME/2012-06/ome.xsd";
 		"https://raw.github.com/openmicroscopy/openmicroscopy/schema-2012-06/components/specification/InProgress/ome.xsd";
-
-	protected static final Logger LOGGER = LoggerFactory
-		.getLogger(AbstractOMEXMLMetadata.class);
 
 	// -- Fields --
 
@@ -114,10 +112,10 @@ public abstract class AbstractOMEXMLMetadata implements OMEXMLMetadata {
 			return os.toString(Constants.ENCODING);
 		}
 		catch (final TransformerException exc) {
-			LOGGER.warn("Failed to create OME-XML", exc);
+			log().warn("Failed to create OME-XML", exc);
 		}
 		catch (final UnsupportedEncodingException exc) {
-			LOGGER.warn("Failed to create OME-XML", exc);
+			log().warn("Failed to create OME-XML", exc);
 		}
 		return null;
 	}

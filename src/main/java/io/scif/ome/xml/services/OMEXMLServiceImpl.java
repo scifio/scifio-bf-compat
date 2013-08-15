@@ -59,11 +59,10 @@ import ome.xml.model.Pixels;
 import ome.xml.model.StructuredAnnotations;
 import ome.xml.model.XMLAnnotation;
 
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.service.AbstractService;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -95,14 +94,13 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 
 	@Parameter
 	XMLService xmlService;
+	
+	@Parameter
+	LogService logService;
 
 	public static final String NO_OME_XML_MSG =
 		"ome-xml.jar is required to read OME-TIFF files.  " +
 			"Please download it from " + URL_BIO_FORMATS_LIBRARY;
-
-	/** Logger for this class. */
-	private static final Logger LOGGER = LoggerFactory
-		.getLogger(OMEXMLService.class);
 
 	// -- Stylesheet names --
 
@@ -155,14 +153,14 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 	public String transformToLatestVersion(String xml) {
 		final String version = getOMEXMLVersion(xml);
 		if (version.equals(getLatestVersion())) return xml;
-		LOGGER.debug("Attempting to update XML with version: {}", version);
-		LOGGER.trace("Initial dump: {}", xml);
+		logService.debug("Attempting to update XML with version: " + version);
+		logService.trace("Initial dump: " + xml);
 
 		String transformed = null;
 		try {
 			if (version.equals("2003-FC")) {
 				xml = verifyOMENamespace(xml);
-				LOGGER.debug("Running UPDATE_2003FC stylesheet.");
+				logService.debug("Running UPDATE_2003FC stylesheet.");
 				if (update2003FC == null) {
 					update2003FC =
 						xmlService.getStylesheet(XSLT_2003FC, OMEXMLServiceImpl.class);
@@ -171,7 +169,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 			}
 			else if (version.equals("2006-LO")) {
 				xml = verifyOMENamespace(xml);
-				LOGGER.debug("Running UPDATE_2006LO stylesheet.");
+				logService.debug("Running UPDATE_2006LO stylesheet.");
 				if (update2006LO == null) {
 					update2006LO =
 						xmlService.getStylesheet(XSLT_2006LO, OMEXMLServiceImpl.class);
@@ -180,7 +178,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 			}
 			else if (version.equals("2007-06")) {
 				xml = verifyOMENamespace(xml);
-				LOGGER.debug("Running UPDATE_200706 stylesheet.");
+				logService.debug("Running UPDATE_200706 stylesheet.");
 				if (update200706 == null) {
 					update200706 =
 						xmlService.getStylesheet(XSLT_200706, OMEXMLServiceImpl.class);
@@ -189,7 +187,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 			}
 			else if (version.equals("2008-02")) {
 				xml = verifyOMENamespace(xml);
-				LOGGER.debug("Running UPDATE_200802 stylesheet.");
+				logService.debug("Running UPDATE_200802 stylesheet.");
 				if (update200802 == null) {
 					update200802 =
 						xmlService.getStylesheet(XSLT_200802, OMEXMLServiceImpl.class);
@@ -197,28 +195,28 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				transformed = xmlService.transformXML(xml, update200802);
 			}
 			else transformed = xml;
-			LOGGER.debug("XML updated to at least 2008-09");
-			LOGGER.trace("At least 2008-09 dump: {}", transformed);
+			logService.debug("XML updated to at least 2008-09");
+			logService.trace("At least 2008-09 dump: " + transformed);
 
 			if (!version.equals("2009-09") && !version.equals("2010-04") &&
 				!version.equals("2010-06") && !version.equals("2011-06") &&
 				!version.equals("2012-06"))
 			{
 				transformed = verifyOMENamespace(transformed);
-				LOGGER.debug("Running UPDATE_200809 stylesheet.");
+				logService.debug("Running UPDATE_200809 stylesheet.");
 				if (update200809 == null) {
 					update200809 =
 						xmlService.getStylesheet(XSLT_200809, OMEXMLServiceImpl.class);
 				}
 				transformed = xmlService.transformXML(transformed, update200809);
 			}
-			LOGGER.debug("XML updated to at least 2009-09");
-			LOGGER.trace("At least 2009-09 dump: {}", transformed);
+			logService.debug("XML updated to at least 2009-09");
+			logService.trace("At least 2009-09 dump: " + transformed);
 			if (!version.equals("2010-04") && !version.equals("2010-06") &&
 				!version.equals("2011-06") && !version.equals("2012-06"))
 			{
 				transformed = verifyOMENamespace(transformed);
-				LOGGER.debug("Running UPDATE_200909 stylesheet.");
+				logService.debug("Running UPDATE_200909 stylesheet.");
 				if (update200909 == null) {
 					update200909 =
 						xmlService.getStylesheet(XSLT_200909, OMEXMLServiceImpl.class);
@@ -226,14 +224,14 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				transformed = xmlService.transformXML(transformed, update200909);
 			}
 			else transformed = xml;
-			LOGGER.debug("XML updated to at least 2010-04");
-			LOGGER.trace("At least 2010-04 dump: {}", transformed);
+			logService.debug("XML updated to at least 2010-04");
+			logService.trace("At least 2010-04 dump: " + transformed);
 
 			if (!version.equals("2010-06") && !version.equals("2011-06") &&
 				!version.equals("2012-06"))
 			{
 				transformed = verifyOMENamespace(transformed);
-				LOGGER.debug("Running UPDATE_201004 stylesheet.");
+				logService.debug("Running UPDATE_201004 stylesheet.");
 				if (update201004 == null) {
 					update201004 =
 						xmlService.getStylesheet(XSLT_201004, OMEXMLServiceImpl.class);
@@ -241,11 +239,11 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				transformed = xmlService.transformXML(transformed, update201004);
 			}
 			else transformed = xml;
-			LOGGER.debug("XML updated to at least 2010-06");
+			logService.debug("XML updated to at least 2010-06");
 
 			if (!version.equals("2011-06") && !version.equals("2012-06")) {
 				transformed = verifyOMENamespace(transformed);
-				LOGGER.debug("Running UPDATE_201006 stylesheet.");
+				logService.debug("Running UPDATE_201006 stylesheet.");
 				if (update201006 == null) {
 					update201006 =
 						xmlService.getStylesheet(XSLT_201006, OMEXMLServiceImpl.class);
@@ -253,11 +251,11 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				transformed = xmlService.transformXML(transformed, update201006);
 			}
 			else transformed = xml;
-			LOGGER.debug("XML updated to at least 2011-06");
+			logService.debug("XML updated to at least 2011-06");
 
 			if (!version.equals("2012-06")) {
 				transformed = verifyOMENamespace(transformed);
-				LOGGER.debug("Running UPDATE_201106 stylesheet.");
+				logService.debug("Running UPDATE_201106 stylesheet.");
 				if (update201106 == null) {
 					update201106 =
 						xmlService.getStylesheet(XSLT_201106, OMEXMLServiceImpl.class);
@@ -265,17 +263,17 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				transformed = xmlService.transformXML(transformed, update201106);
 			}
 			else transformed = xml;
-			LOGGER.debug("XML updated to at least 2012-06");
+			logService.debug("XML updated to at least 2012-06");
 
 			// fix namespaces
 			transformed = transformed.replaceAll("<ns.*?:", "<");
 			transformed = transformed.replaceAll("xmlns:ns.*?=", "xmlns:OME=");
 			transformed = transformed.replaceAll("</ns.*?:", "</");
-			LOGGER.trace("Transformed XML dump: {}", transformed);
+			logService.trace("Transformed XML dump: " + transformed);
 			return transformed;
 		}
 		catch (final IOException e) {
-			LOGGER.warn("Could not transform version " + version + " OME-XML.");
+			logService.warn("Could not transform version " + version + " OME-XML.");
 		}
 		return null;
 	}
@@ -431,7 +429,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 			exception = exc;
 		}
 		if (exception != null) {
-			LOGGER.info("Malformed OME-XML", exception);
+			logService.info("Malformed OME-XML", exception);
 			return null;
 		}
 
@@ -449,7 +447,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 			exception = exc;
 		}
 		if (exception != null) {
-			LOGGER.info("Internal XML conversion error", exception);
+			logService.info("Internal XML conversion error", exception);
 			return null;
 		}
 
@@ -481,7 +479,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				exception = exc;
 			}
 			if (exception != null) {
-				LOGGER.info("Malformed OME-XML", exception);
+				logService.info("Malformed OME-XML", exception);
 				return false;
 			}
 
@@ -517,7 +515,7 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				exception = exc;
 			}
 			if (exception != null) {
-				LOGGER.info("Internal XML conversion error", exception);
+				logService.info("Internal XML conversion error", exception);
 				return false;
 			}
 		}
@@ -631,13 +629,13 @@ public class OMEXMLServiceImpl extends AbstractService implements OMEXMLService
 				}
 			}
 			catch (final ParserConfigurationException e) {
-				LOGGER.debug("Failed to parse OriginalMetadata", e);
+				logService.debug("Failed to parse OriginalMetadata", e);
 			}
 			catch (final SAXException e) {
-				LOGGER.debug("Failed to parse OriginalMetadata", e);
+				logService.debug("Failed to parse OriginalMetadata", e);
 			}
 			catch (final IOException e) {
-				LOGGER.debug("Failed to parse OriginalMetadata", e);
+				logService.debug("Failed to parse OriginalMetadata", e);
 			}
 		}
 
