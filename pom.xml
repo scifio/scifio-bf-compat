@@ -30,11 +30,6 @@
       <version>${bio-formats.version}</version>
     </dependency>
     <dependency>
-      <groupId>${bio-formats.groupId}</groupId>
-      <artifactId>ome-xml</artifactId>
-      <version>${bio-formats.version}</version>
-    </dependency>
-    <dependency>
       <groupId>${imglib2.groupId}</groupId>
       <artifactId>imglib2</artifactId>
       <version>${imglib2.version}</version>
@@ -43,6 +38,11 @@
       <groupId>${scifio.groupId}</groupId>
       <artifactId>scifio</artifactId>
       <version>${scifio.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>${scifio.groupId}</groupId>
+      <artifactId>ome-formats</artifactId>
+      <version>0.1.0</version>
     </dependency>
     <dependency>
       <groupId>${scijava-common.groupId}</groupId>
