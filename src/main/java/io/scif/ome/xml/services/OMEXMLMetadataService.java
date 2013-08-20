@@ -29,6 +29,7 @@ import io.scif.FormatException;
 import io.scif.ImageMetadata;
 import io.scif.Metadata;
 import io.scif.Reader;
+import io.scif.SCIFIOService;
 import loci.formats.IFormatWriter;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
@@ -39,8 +40,6 @@ import ome.xml.model.enums.ExperimentType;
 import ome.xml.model.enums.Immersion;
 import ome.xml.model.enums.LaserMedium;
 import ome.xml.model.enums.LaserType;
-
-import org.scijava.service.Service;
 
 /**
  * A utility class for working with metadata objects, including
@@ -57,7 +56,7 @@ import org.scijava.service.Service;
  * >Gitweb</a></dd>
  * </dl>
  */
-public interface OMEXMLMetadataService extends Service {
+public interface OMEXMLMetadataService extends SCIFIOService {
 
 	/**
 	 * Populates the 'pixels' element of the given metadata store, using core
