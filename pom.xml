@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.scijava</groupId>
     <artifactId>pom-scijava</artifactId>
-    <version>1.70</version>
+    <version>1.85</version>
   </parent>
 
   <groupId>io.scif</groupId>
@@ -17,6 +17,9 @@
   in SCIFIO applications.</description>
   <url>http://scif.io/</url>
   <inceptionYear>2013</inceptionYear>
+
+  <properties>
+  </properties>
 
   <dependencies>
     <dependency>
@@ -42,7 +45,7 @@
     <dependency>
       <groupId>${scifio.groupId}</groupId>
       <artifactId>ome-formats</artifactId>
-      <version>0.1.0</version>
+      <version>0.1.1-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>${scijava-common.groupId}</groupId>
@@ -78,8 +81,8 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.6</source>
+          <target>1.6</target>
         </configuration>
       </plugin>
       <plugin>

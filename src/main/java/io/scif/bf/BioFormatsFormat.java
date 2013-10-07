@@ -55,7 +55,7 @@ import net.imglib2.meta.CalibratedAxis;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
-import org.scijava.util.IntArray;
+import org.scijava.util.LongArray;
 
 /**
  * Wraps an {@link ImageReader} in a SCIFIO {@link Format}, allowing proprietary
@@ -119,10 +119,12 @@ public class BioFormatsFormat extends AbstractFormat {
 
 	// -- Format API Methods --
 
+	@Override
 	public String getFormatName() {
 		return "Bio-Formats Compatibility Format";
 	}
 
+	@Override
 	public String[] getSuffixes() {
 		return suffixes;
 	}
@@ -149,6 +151,7 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		// -- Metadata API Methods --
 
+		@Override
 		public void populateImageMetadata() {
 			for (int s = 0; s < reader.getSeriesCount(); s++) {
 				add(convertMetadata(reader, s));
@@ -215,14 +218,20 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		// -- Reader API Methods --
 
-		public ByteArrayPlane openPlane(final int imageIndex, final int planeIndex,
-			final ByteArrayPlane plane, final int x, final int y, final int w,
-			final int h) throws FormatException, IOException
+		@Override
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final long[] offsets, final long[] lengths)
+			throws FormatException, IOException
 		{
 			final IFormatReader reader = getMetadata().getReader();
 			reader.setSeries(imageIndex);
 			try {
-				reader.openBytes(planeIndex, plane.getBytes(), x, y, w, h);
+				Metadata meta = getMetadata();
+				final int xIndex = meta.getAxisIndex(imageIndex, Axes.X), yIndex =
+					meta.getAxisIndex(imageIndex, Axes.Y);
+				final int x = (int) offsets[xIndex], y = (int) offsets[yIndex], w =
+					(int) lengths[xIndex], h = (int) lengths[yIndex];
+				reader.openBytes((int)planeIndex, plane.getBytes(), x, y, w, h);
 
 				if (reader.get8BitLookupTable() != null) {
 					plane.setColorTable(new ColorTable8(reader.get8BitLookupTable()));
@@ -288,44 +297,56 @@ public class BioFormatsFormat extends AbstractFormat {
 		final ImageMetadata imgMeta = new DefaultImageMetadata();
 		reader.setSeries(s);
 
-		final ArrayList<CalibratedAxis> axisTypes = new ArrayList<CalibratedAxis>();
-		final IntArray axisLengths = new IntArray();
-
+		final ArrayList<CalibratedAxis> axes = new ArrayList<CalibratedAxis>();
+		final LongArray axisLengths = new LongArray();
+		imgMeta.setPlanarAxisCount(2);
 		// parse interleaved channel dimensions
-		parseChannelDimensions(reader, true, axisTypes, axisLengths);
+		parseChannelDimensions(reader, imgMeta, true, axes, axisLengths);
 
 		// parse standard dimensions in dimensional order
 		final String dimOrder = reader.getDimensionOrder().toUpperCase();
 		for (int i = 0; i < dimOrder.length(); i++) {
 			switch (dimOrder.charAt(i)) {
 				case 'X':
-					axisTypes.add(FormatTools.calibrate(Axes.X));
-					axisLengths.add(reader.getSizeX());
+					axes.add(FormatTools.createAxis(Axes.X));
+					axisLengths.add((long) reader.getSizeX());
 					break;
 				case 'Y':
-					axisTypes.add(FormatTools.calibrate(Axes.Y));
-					axisLengths.add(reader.getSizeY());
+					axes.add(FormatTools.createAxis(Axes.Y));
+					axisLengths.add((long) reader.getSizeY());
 					break;
 				case 'Z':
-					axisTypes.add(FormatTools.calibrate(Axes.Z));
-					axisLengths.add(reader.getSizeZ());
+					if (reader.getSizeZ() > 1) {
+						axes.add(FormatTools.createAxis(Axes.Z));
+						axisLengths.add((long) reader.getSizeZ());
+					}
 					break;
 				case 'C':
-					// parse non-interleaved channel dimensions
-					parseChannelDimensions(reader, false, axisTypes, axisLengths);
+					if (reader.getSizeC() > 1) {
+						// parse non-interleaved channel dimensions
+						parseChannelDimensions(reader, imgMeta, false, axes, axisLengths);
+					}
+					else if (reader.isIndexed()) {
+						// Indexed images have a length 1 channel axis
+						imgMeta.setIndexed(true);
+						axisLengths.add(1l);
+						axes.add(FormatTools.createAxis(Axes.CHANNEL));
+					}
 					break;
 				case 'T':
-					axisTypes.add(FormatTools.calibrate(Axes.TIME));
-					axisLengths.add(reader.getSizeT());
+					if (reader.getSizeT() > 1) {
+						axes.add(FormatTools.createAxis(Axes.TIME));
+						axisLengths.add((long) reader.getSizeT());
+					}
 					break;
 			}
 		}
 
-		imgMeta.setAxisTypes(axisTypes.toArray(new CalibratedAxis[0]));
+		imgMeta.setAxes(axes.toArray(new CalibratedAxis[axes.size()]));
 		imgMeta.setAxisLengths(axisLengths.copyArray());
-		imgMeta.setRGB(reader.isRGB());
-
-		imgMeta.setPlaneCount(reader.getImageCount());
+		if (reader.isRGB() && imgMeta.getAxisIndex(Axes.CHANNEL) >= 0) {
+			imgMeta.setPlanarAxisCount(imgMeta.getAxisIndex(Axes.CHANNEL) + 1);
+		}
 
 		imgMeta.setThumbSizeX(reader.getThumbSizeX());
 		imgMeta.setThumbSizeY(reader.getThumbSizeY());
@@ -337,8 +358,6 @@ public class BioFormatsFormat extends AbstractFormat {
 		imgMeta.setBitsPerPixel(bitsPerPixel);
 		imgMeta.setOrderCertain(reader.isOrderCertain());
 		imgMeta.setLittleEndian(reader.isLittleEndian());
-		imgMeta.setInterleaved(reader.isInterleaved());
-		imgMeta.setIndexed(reader.isIndexed());
 		imgMeta.setFalseColor(reader.isFalseColor());
 		imgMeta.setMetadataComplete(reader.isMetadataComplete());
 
@@ -351,15 +370,16 @@ public class BioFormatsFormat extends AbstractFormat {
 	}
 
 	private static void parseChannelDimensions(final IFormatReader reader,
-		final boolean interleaved, final ArrayList<CalibratedAxis> axisTypes,
-		final IntArray axisLengths)
+		final ImageMetadata meta, final boolean interleaved,
+		final ArrayList<CalibratedAxis> axisTypes, final LongArray axisLengths)
 	{
 		final int[] cDimLengths = reader.getChannelDimLengths();
 		final String[] cDimTypes = reader.getChannelDimTypes();
 		for (int subC = 0; subC < cDimLengths.length; subC++) {
 			if (interleaved != reader.isInterleaved(subC)) continue;
-			axisTypes.add(FormatTools.calibrate(Axes.get(cDimTypes[subC])));
-			axisLengths.add(cDimLengths[subC]);
+			if (interleaved) meta.setPlanarAxisCount(meta.getPlanarAxisCount() + 1);
+			axisTypes.add(FormatTools.createAxis(Axes.get(cDimTypes[subC])));
+			axisLengths.add((long) cDimLengths[subC]);
 		}
 	}
 
