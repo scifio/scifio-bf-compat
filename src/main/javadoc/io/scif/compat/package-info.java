@@ -28,4 +28,4 @@
  *
  * @author Mark Hiner hinerm at gmail.com
  */
-package io.scif.compat;:
+package io.scif.compat;
