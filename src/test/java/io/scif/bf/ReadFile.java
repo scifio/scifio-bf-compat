@@ -67,9 +67,9 @@ public class ReadFile {
 		final Metadata meta = parser.parse(file);
 		for (int i = 0; i < meta.getImageCount(); i++) {
 			System.out.println("image #" + i + " dimensions:");
-			for (int a = 0; a < meta.getAxisCount(i); a++) {
-				final AxisType axisType = meta.getAxis(i, a).type();
-				final long axisLength = meta.getAxisLength(i, a);
+			for (int a = 0; a < meta.get(i).getAxes().size(); a++) {
+				final AxisType axisType = meta.get(i).getAxis(a).type();
+				final long axisLength = meta.get(i).getAxisLength(a);
 				System.out.println("\t" + axisLength + " : " + axisType);
 			}
 		}

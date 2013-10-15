@@ -227,8 +227,8 @@ public class BioFormatsFormat extends AbstractFormat {
 			reader.setSeries(imageIndex);
 			try {
 				Metadata meta = getMetadata();
-				final int xIndex = meta.getAxisIndex(imageIndex, Axes.X), yIndex =
-					meta.getAxisIndex(imageIndex, Axes.Y);
+				final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X), yIndex =
+					meta.get(imageIndex).getAxisIndex(Axes.Y);
 				final int x = (int) offsets[xIndex], y = (int) offsets[yIndex], w =
 					(int) lengths[xIndex], h = (int) lengths[yIndex];
 				reader.openBytes((int)planeIndex, plane.getBytes(), x, y, w, h);
