@@ -40,6 +40,7 @@ import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.common.RandomAccessInputStreamWrapper;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.ome.xml.meta.OMEXMLMetadataImpl;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -48,10 +49,12 @@ import java.util.ArrayList;
 import loci.formats.ClassList;
 import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
+import loci.formats.meta.MetadataStore;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.CalibratedAxis;
+import ome.xml.model.primitives.PositiveFloat;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
@@ -206,6 +209,8 @@ public class BioFormatsFormat extends AbstractFormat {
 				final ImageReader reader = createImageReader(this);
 				meta.setReader(reader);
 
+				MetadataStore store = new OMEXMLMetadataImpl();
+				reader.setMetadataStore(store);
 				reader.setId(stream.getFileName());
 			}
 			catch (final loci.formats.FormatException e) {
@@ -297,28 +302,35 @@ public class BioFormatsFormat extends AbstractFormat {
 		final ImageMetadata imgMeta = new DefaultImageMetadata();
 		reader.setSeries(s);
 
+		OMEXMLMetadataImpl store = (OMEXMLMetadataImpl) reader.getMetadataStore();
 		final ArrayList<CalibratedAxis> axes = new ArrayList<CalibratedAxis>();
 		final LongArray axisLengths = new LongArray();
 		imgMeta.setPlanarAxisCount(2);
 		// parse interleaved channel dimensions
 		parseChannelDimensions(reader, imgMeta, true, axes, axisLengths);
-
 		// parse standard dimensions in dimensional order
 		final String dimOrder = reader.getDimensionOrder().toUpperCase();
+		CalibratedAxis axis = null;
 		for (int i = 0; i < dimOrder.length(); i++) {
 			switch (dimOrder.charAt(i)) {
 				case 'X':
-					axes.add(FormatTools.createAxis(Axes.X));
+					axis = FormatTools.createAxis(Axes.X);
+					axes.add(axis);
 					axisLengths.add((long) reader.getSizeX());
+					calibarte(store.getPixelsPhysicalSizeX(s), axis);
 					break;
 				case 'Y':
-					axes.add(FormatTools.createAxis(Axes.Y));
+					axis = FormatTools.createAxis(Axes.Y);
+					axes.add(axis);
 					axisLengths.add((long) reader.getSizeY());
+					calibarte(store.getPixelsPhysicalSizeY(s), axis);
 					break;
 				case 'Z':
+					axis = FormatTools.createAxis(Axes.Z);
 					if (reader.getSizeZ() > 1) {
-						axes.add(FormatTools.createAxis(Axes.Z));
+						axes.add(axis);
 						axisLengths.add((long) reader.getSizeZ());
+						calibarte(store.getPixelsPhysicalSizeZ(s), axis);
 					}
 					break;
 				case 'C':
@@ -367,6 +379,17 @@ public class BioFormatsFormat extends AbstractFormat {
 		imgMeta.setThumbnail(reader.isThumbnailSeries());
 
 		return imgMeta;
+	}
+
+	/**
+	 * Calibrates the given axis if the physical pixel size is non-null
+	 */
+	private static void calibarte(PositiveFloat pixelsPhysicalSize,
+		CalibratedAxis axis)
+	{
+		if (pixelsPhysicalSize != null) {
+			FormatTools.calibrate(axis, pixelsPhysicalSize.getValue(), 0.0);
+		}
 	}
 
 	private static void parseChannelDimensions(final IFormatReader reader,
