@@ -211,6 +211,9 @@ public class BioFormatsFormat extends AbstractFormat {
 
 				MetadataStore store = new OMEXMLMetadataImpl();
 				reader.setMetadataStore(store);
+				reader.setOriginalMetadataPopulated(isOriginalMetadataPopulated());
+				reader.setMetadataFiltered(isMetadataFiltered());
+				reader.setGroupFiles(isGroupFiles());
 				reader.setId(stream.getFileName());
 			}
 			catch (final loci.formats.FormatException e) {
