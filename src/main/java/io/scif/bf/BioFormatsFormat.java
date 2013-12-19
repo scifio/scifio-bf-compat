@@ -255,6 +255,11 @@ public class BioFormatsFormat extends AbstractFormat {
 			return plane;
 		}
 
+		@Override
+		public void setGroupFiles(final boolean groupFiles) {
+			getMetadata().getReader().setGroupFiles(groupFiles);
+		}
+
 	}
 
 	// -- Helper methods --
