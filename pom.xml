@@ -134,7 +134,7 @@
 
 	<ciManagement>
 		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/view/SCIFIO/job/SCIFIOBFCompat/</url>
+		<url>http://jenkins.imagej.net/job/SCIFIOBFCompat/</url>
 	</ciManagement>
 
 	<mailingLists>
