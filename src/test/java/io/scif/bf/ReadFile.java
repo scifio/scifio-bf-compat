@@ -30,6 +30,7 @@ import io.scif.FormatException;
 import io.scif.Metadata;
 import io.scif.Parser;
 import io.scif.SCIFIO;
+import io.scif.config.SCIFIOConfig;
 
 import java.io.File;
 import java.io.IOException;
@@ -60,7 +61,8 @@ public class ReadFile {
 	{
 		final SCIFIO scifio = new SCIFIO();
 		final Format format =
-			scifio.format().getFormat(file.getAbsolutePath(), true);
+			scifio.format().getFormat(file.getAbsolutePath(),
+				new SCIFIOConfig().checkerSetOpen(true));
 		System.out.println("file = " + file);
 		System.out.println("format = " + format.getFormatName());
 		final Parser parser = format.createParser();

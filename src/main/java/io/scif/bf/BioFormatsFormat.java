@@ -39,6 +39,7 @@ import io.scif.HasFormat;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
 import io.scif.common.RandomAccessInputStreamWrapper;
+import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.ome.xml.meta.OMEXMLMetadataImpl;
 import io.scif.util.FormatTools;
@@ -104,7 +105,6 @@ public class BioFormatsFormat extends AbstractFormat {
 	 */
 	public BioFormatsFormat() {
 		readerClasses = compileReaderClasses();
-		suffixes = createImageReader().getSuffixes();
 	}
 
 	// -- BioFormatsFormat API Methods --
@@ -117,10 +117,15 @@ public class BioFormatsFormat extends AbstractFormat {
 	/** Adds the given reader class to this format's supported reader list. */
 	public void addReader(final Class<IFormatReader> readerClass) {
 		readerClasses.addClass(readerClass);
-		suffixes = createImageReader().getSuffixes();
 	}
 
 	// -- Format API Methods --
+
+	@Override
+	protected String[] makeSuffixArray() {
+		// NB: suffixes may change. see getSuffixes() override.
+		return null;
+	}
 
 	@Override
 	public String getFormatName() {
@@ -129,7 +134,8 @@ public class BioFormatsFormat extends AbstractFormat {
 
 	@Override
 	public String[] getSuffixes() {
-		return suffixes;
+		// NB: the suffixes may change, so this array must always be re-generated.
+		return createImageReader().getSuffixes();
 	}
 
 	// -- Nested Classes --
@@ -178,8 +184,8 @@ public class BioFormatsFormat extends AbstractFormat {
 		}
 
 		@Override
-		public boolean isFormat(final String name, final boolean open) {
-			return createImageReader(this).isThisType(name, open);
+		public boolean isFormat(final String name, final SCIFIOConfig config) {
+			return createImageReader(this).isThisType(name, config.checkerIsOpen());
 		}
 
 		@Override
@@ -203,7 +209,8 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		@Override
 		protected void typedParse(final RandomAccessInputStream stream,
-			final Metadata meta) throws IOException, FormatException
+			final Metadata meta, final SCIFIOConfig config) throws IOException,
+			FormatException
 		{
 			try {
 				final ImageReader reader = createImageReader(this);
@@ -211,9 +218,9 @@ public class BioFormatsFormat extends AbstractFormat {
 
 				MetadataStore store = new OMEXMLMetadataImpl();
 				reader.setMetadataStore(store);
-				reader.setOriginalMetadataPopulated(isOriginalMetadataPopulated());
-				reader.setMetadataFiltered(isMetadataFiltered());
-				reader.setGroupFiles(isGroupFiles());
+				reader.setOriginalMetadataPopulated(config.parserIsSaveOriginalMetadata());
+				reader.setMetadataFiltered(config.parserIsFiltered());
+				reader.setGroupFiles(config.groupableIsGroupFiles());
 				reader.setId(stream.getFileName());
 			}
 			catch (final loci.formats.FormatException e) {
@@ -227,11 +234,13 @@ public class BioFormatsFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
-			final ByteArrayPlane plane, final long[] offsets, final long[] lengths)
-			throws FormatException, IOException
+		public ByteArrayPlane openPlane(final int imageIndex,
+			final long planeIndex, final ByteArrayPlane plane, final long[] offsets,
+			final long[] lengths, final SCIFIOConfig config) throws FormatException,
+			IOException
 		{
 			final IFormatReader reader = getMetadata().getReader();
+			reader.setGroupFiles(config.groupableIsGroupFiles());
 			reader.setSeries(imageIndex);
 			try {
 				Metadata meta = getMetadata();
@@ -256,8 +265,8 @@ public class BioFormatsFormat extends AbstractFormat {
 		}
 
 		@Override
-		public void setGroupFiles(final boolean groupFiles) {
-			getMetadata().getReader().setGroupFiles(groupFiles);
+		protected String[] createDomainArray() {
+			return new String[0];
 		}
 
 	}
@@ -413,5 +422,4 @@ public class BioFormatsFormat extends AbstractFormat {
 			axisLengths.add((long) cDimLengths[subC]);
 		}
 	}
-
 }
