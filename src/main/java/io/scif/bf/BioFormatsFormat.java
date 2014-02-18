@@ -240,7 +240,6 @@ public class BioFormatsFormat extends AbstractFormat {
 			IOException
 		{
 			final IFormatReader reader = getMetadata().getReader();
-			reader.setGroupFiles(config.groupableIsGroupFiles());
 			reader.setSeries(imageIndex);
 			try {
 				Metadata meta = getMetadata();
