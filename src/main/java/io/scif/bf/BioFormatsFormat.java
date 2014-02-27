@@ -41,7 +41,6 @@ import io.scif.MetaTable;
 import io.scif.common.RandomAccessInputStreamWrapper;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
-import io.scif.ome.xml.meta.OMEXMLMetadataImpl;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -51,6 +50,7 @@ import loci.formats.ClassList;
 import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
 import loci.formats.meta.MetadataStore;
+import loci.formats.ome.OMEXMLMetadataImpl;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
