@@ -83,9 +83,9 @@ public class BioFormatsFormat extends AbstractFormat {
 		"loci.formats.in.OMETiffReader", "loci.formats.in.OMEXMLReader",
 		"loci.formats.in.PCXReader", "loci.formats.in.PGMReader",
 		"loci.formats.in.PictReader", "loci.formats.in.QTReader",
-		"loci.formats.in.SCIFIOReader", "loci.formats.in.TextReader",
-		"loci.formats.in.TiffDelegateReader", "loci.formats.in.TileJPEGReader",
-		"loci.formats.in.ZipReader" };
+		"loci.formats.in.SCIFIOReader", "loci.formats.in.SDTReader",
+		"loci.formats.in.TextReader", "loci.formats.in.TiffDelegateReader",
+		"loci.formats.in.TileJPEGReader", "loci.formats.in.ZipReader" };
 
 	// -- Fields --
 
