@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>1.142</version>
+		<version>1.146</version>
 		<relativePath />
 	</parent>
 
@@ -25,13 +25,46 @@
 	<dependencies>
 		<dependency>
 			<groupId>${bio-formats.groupId}</groupId>
-			<artifactId>loci-common</artifactId>
+			<artifactId>formats-api</artifactId>
 			<version>${bio-formats.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>${bio-formats.groupId}</groupId>
-			<artifactId>scifio</artifactId>
-			<version>${bio-formats.version}</version>
+			<exclusions>
+				<exclusion>
+					<groupId>${bio-formats.groupId}</groupId>
+					<artifactId>jai_imageio</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>${bio-formats.groupId}</groupId>
+					<artifactId>lwf-stubs</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>${bio-formats.groupId}</groupId>
+					<artifactId>specification</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>${bio-formats.groupId}</groupId>
+					<artifactId>turbojpeg</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.esotericsoftware.kryo</groupId>
+					<artifactId>kryo</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>com.jgoodies</groupId>
+					<artifactId>forms</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>joda-time</groupId>
+					<artifactId>joda-time</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.perf4j</groupId>
+					<artifactId>perf4j</artifactId>
+				</exclusion>
+				<exclusion>
+					<groupId>org.scijava</groupId>
+					<artifactId>native-lib-loader</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>${imglib2.groupId}</groupId>
@@ -45,8 +78,8 @@
 		</dependency>
 		<dependency>
 			<groupId>${scifio.groupId}</groupId>
-			<artifactId>ome-formats</artifactId>
-			<version>${ome-formats.version}</version>
+			<artifactId>scifio-ome-xml</artifactId>
+			<version>${scifio-ome-xml.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>${scijava-common.groupId}</groupId>
@@ -56,7 +89,7 @@
 
 		<dependency>
 			<groupId>${bio-formats.groupId}</groupId>
-			<artifactId>bio-formats</artifactId>
+			<artifactId>formats-gpl</artifactId>
 			<version>${bio-formats.version}</version>
 			<scope>runtime</scope>
 		</dependency>
@@ -67,6 +100,7 @@
 			<version>4.11</version>
 			<scope>test</scope>
 		</dependency>
+
 	</dependencies>
 
 	<build>
