@@ -21,9 +21,9 @@
  * #L%
  */
 /**
- * Contains Bio-Formats format, wrapping Bio-Formats proprietary readers
- * as a SCIFIO Format.
- *
- * @author Mark Hiner hinerm at gmail.com
+ * Contains wrapping and utility classes needed for BF <-> SCIFIO conversion.
+ * 
+ * @author Mark Hiner
  */
-package io.scif.bf;
+
+package io.scif.common;

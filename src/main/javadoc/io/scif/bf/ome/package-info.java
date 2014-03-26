@@ -21,9 +21,9 @@
  * #L%
  */
 /**
- * Contains Bio-Formats format, wrapping Bio-Formats proprietary readers
- * as a SCIFIO Format.
- *
- * @author Mark Hiner hinerm at gmail.com
+ * Contains translators from {@link io.scif.bf.BioFormatsFormat} to OME-XML.
+ * 
+ * @author Mark Hiner
  */
-package io.scif.bf;
+
+package io.scif.bf.ome;
