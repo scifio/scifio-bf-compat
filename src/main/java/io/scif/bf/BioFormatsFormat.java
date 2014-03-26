@@ -220,6 +220,8 @@ public class BioFormatsFormat extends AbstractFormat {
 				reader.setMetadataFiltered(config.parserIsFiltered());
 				reader.setGroupFiles(config.groupableIsGroupFiles());
 				reader.setId(stream.getFileName());
+
+				meta.setTable(new DefaultMetaTable(reader.getGlobalMetadata()));
 			}
 			catch (final loci.formats.FormatException e) {
 				throw new FormatException(e);
