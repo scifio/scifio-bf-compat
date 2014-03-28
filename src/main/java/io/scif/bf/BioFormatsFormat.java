@@ -327,26 +327,38 @@ public class BioFormatsFormat extends AbstractFormat {
 		// parse standard dimensions in dimensional order
 		final String dimOrder = reader.getDimensionOrder().toUpperCase();
 		CalibratedAxis axis = null;
+		// CTR HACK: Recover gracefully when StageLabel element is missing.
+		// This avoids a problem with the OMEXMLMetadataImpl implementation,
+		// which currently does not check for null on the StageLabel object.
+		Double stageLabelX = null, stageLabelY = null, stageLabelZ = null;
+		try {
+			stageLabelX = store.getStageLabelX(s);
+			stageLabelY = store.getStageLabelY(s);
+			stageLabelZ = store.getStageLabelZ(s);
+		}
+		catch (final NullPointerException exc) {
+			// ignore
+		}
 		for (int i = 0; i < dimOrder.length(); i++) {
 			switch (dimOrder.charAt(i)) {
 				case 'X':
 					axis = FormatTools.createAxis(Axes.X);
 					axes.add(axis);
 					axisLengths.add((long) reader.getSizeX());
-					calibarte(store.getPixelsPhysicalSizeX(s), axis);
+					calibarte(store.getPixelsPhysicalSizeX(s), axis, stageLabelX);
 					break;
 				case 'Y':
 					axis = FormatTools.createAxis(Axes.Y);
 					axes.add(axis);
 					axisLengths.add((long) reader.getSizeY());
-					calibarte(store.getPixelsPhysicalSizeY(s), axis);
+					calibarte(store.getPixelsPhysicalSizeY(s), axis, stageLabelY);
 					break;
 				case 'Z':
 					axis = FormatTools.createAxis(Axes.Z);
 					if (reader.getSizeZ() > 1) {
 						axes.add(axis);
 						axisLengths.add((long) reader.getSizeZ());
-						calibarte(store.getPixelsPhysicalSizeZ(s), axis);
+						calibarte(store.getPixelsPhysicalSizeZ(s), axis, stageLabelZ);
 					}
 					break;
 				case 'C':
@@ -399,12 +411,14 @@ public class BioFormatsFormat extends AbstractFormat {
 
 	/**
 	 * Calibrates the given axis if the physical pixel size is non-null
+	 * @param stageLabel 
 	 */
 	private static void calibarte(PositiveFloat pixelsPhysicalSize,
-		CalibratedAxis axis)
+		CalibratedAxis axis, Double stageLabel)
 	{
 		if (pixelsPhysicalSize != null) {
-			FormatTools.calibrate(axis, pixelsPhysicalSize.getValue(), 0.0);
+			FormatTools.calibrate(axis, pixelsPhysicalSize.getValue(),
+				stageLabel == null ? 0.0 : stageLabel);
 		}
 	}
 
