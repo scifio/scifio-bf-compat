@@ -26,12 +26,14 @@ package io.scif.common;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import loci.common.RandomAccessInputStream;
+
 /**
  * Wrapper class to convert {@link io.scif.io.RandomAccessInputStream} to
  * {@link loci.common.RandomAccessInputStream}.
  */
 public class RandomAccessInputStreamWrapper extends
-	loci.common.RandomAccessInputStream
+	RandomAccessInputStream
 {
 
 	// -- Fields --
