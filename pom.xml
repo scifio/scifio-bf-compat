@@ -68,7 +68,6 @@
 		<dependency>
 			<groupId>io.scif</groupId>
 			<artifactId>scifio</artifactId>
-      <version>0.13.4-SNAPSHOT</version>
 		</dependency>
 		<dependency>
 			<groupId>io.scif</groupId>
