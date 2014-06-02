@@ -145,6 +145,8 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		private IFormatReader reader;
 
+		private String formatName;
+
 		// -- BioFormatsFormatMetadata methods --
 
 		// -- Getters and Setters --
@@ -155,6 +157,7 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		public void setReader(final IFormatReader reader) {
 			this.reader = reader;
+			formatName = null;
 		}
 
 		// -- Metadata API Methods --
@@ -164,12 +167,21 @@ public class BioFormatsFormat extends AbstractFormat {
 			for (int s = 0; s < reader.getSeriesCount(); s++) {
 				add(convertMetadata(reader, s));
 			}
+			formatName = super.getFormatName();
+			formatName += " - Bio-Formats reader used: " + reader.getFormat();
 		}
 
 		@Override
 		public void close(final boolean fileOnly) throws IOException {
 			super.close(fileOnly);
 			if (reader != null) reader.close(fileOnly);
+		}
+
+		// -- HasFormat methods --
+
+		@Override
+		public String getFormatName() {
+			return formatName == null ? super.getFormatName() : formatName;
 		}
 	}
 
