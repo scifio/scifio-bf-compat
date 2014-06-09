@@ -191,11 +191,13 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		@Override
 		public boolean isFormat(final String name) {
+			if (!realSource(name)) return false;
 			return createImageReader(this).isThisType(name);
 		}
 
 		@Override
 		public boolean isFormat(final String name, final SCIFIOConfig config) {
+			if (!realSource(name)) return false;
 			return createImageReader(this).isThisType(name, config.checkerIsOpen());
 		}
 
@@ -203,8 +205,35 @@ public class BioFormatsFormat extends AbstractFormat {
 		public boolean isFormat(final RandomAccessInputStream stream)
 			throws IOException
 		{
+			if (!realSource(stream)) return false;
 			return createImageReader(this).isThisType(
 				new RandomAccessInputStreamWrapper(stream));
+		}
+
+		/**
+		 * @return true iff the given name corresponds to a non-virtual source
+		 */
+		private boolean realSource(String name) {
+			RandomAccessInputStream stream = null;
+			try {
+				stream = new RandomAccessInputStream(getContext(), name);
+				boolean isRealSource = realSource(stream);
+				stream.close();
+				return isRealSource;
+			}
+			catch (IOException e) {
+				return false;
+			}
+		}
+
+		/**
+		 * @return true iff the given stream is non-virtual (can read at least one
+		 *         position)
+		 */
+		private boolean realSource(RandomAccessInputStream stream)
+			throws IOException
+		{
+			return FormatTools.validStream(stream, 1, stream.isLittleEndian());
 		}
 
 		@Override
