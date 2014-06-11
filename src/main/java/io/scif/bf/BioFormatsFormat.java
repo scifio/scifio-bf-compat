@@ -33,6 +33,7 @@ import io.scif.DefaultImageMetadata;
 import io.scif.DefaultMetaTable;
 import io.scif.Format;
 import io.scif.FormatException;
+import io.scif.HasColorTable;
 import io.scif.HasFormat;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
@@ -49,6 +50,7 @@ import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadataImpl;
+import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
@@ -139,11 +141,16 @@ public class BioFormatsFormat extends AbstractFormat {
 
 	// -- Nested Classes --
 
-	public static class Metadata extends AbstractMetadata {
+	public static class Metadata extends AbstractMetadata implements
+		HasColorTable
+	{
 
 		// -- Fields --
 
 		private IFormatReader reader;
+
+		private ColorTable colorTable;
+		private boolean[] checkedColorTable;
 
 		private String formatName;
 
@@ -169,6 +176,7 @@ public class BioFormatsFormat extends AbstractFormat {
 			}
 			formatName = super.getFormatName();
 			formatName += " - Bio-Formats reader used: " + reader.getFormat();
+			checkedColorTable = null;
 		}
 
 		@Override
@@ -182,6 +190,40 @@ public class BioFormatsFormat extends AbstractFormat {
 		@Override
 		public String getFormatName() {
 			return formatName == null ? super.getFormatName() : formatName;
+		}
+
+		// -- HasColorTable methods --
+
+		@Override
+		public ColorTable getColorTable(int imageIndex, final long planeIndex) {
+			if (imageIndex >= reader.getSeriesCount()) imageIndex = 0;
+
+			if (!checkedColorTable(imageIndex)) {
+				try {
+					if (reader.get16BitLookupTable() != null) {
+						colorTable = new ColorTable16(reader.get16BitLookupTable());
+					}
+					else if (reader.get8BitLookupTable() != null) {
+						colorTable = new ColorTable8(reader.get8BitLookupTable());
+					}
+				}
+				catch (loci.formats.FormatException e) {
+					log().error(e);
+				}
+				catch (IOException e) {
+					log().error(e);
+				}
+				checkedColorTable[imageIndex] = true;
+			}
+
+			return colorTable;
+		}
+
+		private boolean checkedColorTable(final int imageIndex) {
+			if (checkedColorTable == null) checkedColorTable =
+				new boolean[reader.getSeriesCount()];
+
+			return checkedColorTable[imageIndex];
 		}
 	}
 
@@ -291,12 +333,7 @@ public class BioFormatsFormat extends AbstractFormat {
 					(int) lengths[xIndex], h = (int) lengths[yIndex];
 				reader.openBytes((int)planeIndex, plane.getBytes(), x, y, w, h);
 
-				if (reader.get8BitLookupTable() != null) {
-					plane.setColorTable(new ColorTable8(reader.get8BitLookupTable()));
-				}
-				else if (reader.get16BitLookupTable() != null) {
-					plane.setColorTable(new ColorTable16(reader.get16BitLookupTable()));
-				}
+				plane.setColorTable(getMetadata().getColorTable(imageIndex, planeIndex));
 			}
 			catch (final loci.formats.FormatException e) {
 				throw new FormatException(e);
