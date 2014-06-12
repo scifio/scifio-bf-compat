@@ -466,9 +466,6 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		imgMeta.setAxes(axes.toArray(new CalibratedAxis[axes.size()]));
 		imgMeta.setAxisLengths(axisLengths.copyArray());
-		if (reader.isRGB() && imgMeta.getAxisIndex(Axes.CHANNEL) >= 0) {
-			imgMeta.setPlanarAxisCount(imgMeta.getAxisIndex(Axes.CHANNEL) + 1);
-		}
 
 		imgMeta.setThumbSizeX(reader.getThumbSizeX());
 		imgMeta.setThumbSizeY(reader.getThumbSizeY());
