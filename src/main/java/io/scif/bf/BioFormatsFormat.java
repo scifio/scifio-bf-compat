@@ -521,7 +521,7 @@ public class BioFormatsFormat extends AbstractFormat {
 		// Bio-Formats.. we need to find a way to account for them and properly
 		// transfer labels
 		if (query == DesiredChannels.INTERLEAVED || query == DesiredChannels.PLANAR) {
-			if (reader.isInterleaved() == (query == DesiredChannels.INTERLEAVED)) return;
+			if (reader.isInterleaved() != (query == DesiredChannels.INTERLEAVED)) return;
 			long length = 1;
 			if (reader.getRGBChannelCount() > 1) {
 				length = reader.getRGBChannelCount();
