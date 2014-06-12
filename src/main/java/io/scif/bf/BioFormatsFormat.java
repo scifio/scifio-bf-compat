@@ -54,6 +54,7 @@ import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
+import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
 import ome.xml.model.primitives.PositiveFloat;
 
@@ -69,6 +70,12 @@ import org.scijava.util.LongArray;
  */
 @Plugin(type = Format.class, priority = Priority.VERY_HIGH_PRIORITY)
 public class BioFormatsFormat extends AbstractFormat {
+
+	// Channel mapping enum
+
+	private static enum DesiredChannels {
+		INTERLEAVED, PLANAR, NONPLANAR;
+	}
 
 	// -- Constants --
 
@@ -402,7 +409,7 @@ public class BioFormatsFormat extends AbstractFormat {
 		final LongArray axisLengths = new LongArray();
 		imgMeta.setPlanarAxisCount(2);
 		// parse interleaved channel dimensions
-		parseChannelDimensions(reader, imgMeta, true, axes, axisLengths);
+		parseChannelDimensions(reader, imgMeta, DesiredChannels.INTERLEAVED, axes, axisLengths);
 		// parse standard dimensions in dimensional order
 		final String dimOrder = reader.getDimensionOrder().toUpperCase();
 		CalibratedAxis axis = null;
@@ -431,6 +438,9 @@ public class BioFormatsFormat extends AbstractFormat {
 					axes.add(axis);
 					axisLengths.add((long) reader.getSizeY());
 					calibarte(store.getPixelsPhysicalSizeY(s), axis, stageLabelY);
+					// Ensure non-interleaved RGB channels are parsed after the Y axis
+					parseChannelDimensions(reader, imgMeta, DesiredChannels.PLANAR, axes,
+						axisLengths);
 					break;
 				case 'Z':
 					axis = FormatTools.createAxis(Axes.Z);
@@ -441,16 +451,9 @@ public class BioFormatsFormat extends AbstractFormat {
 					}
 					break;
 				case 'C':
-					if (reader.getSizeC() > 1) {
-						// parse non-interleaved channel dimensions
-						parseChannelDimensions(reader, imgMeta, false, axes, axisLengths);
-					}
-					else if (reader.isIndexed()) {
-						// Indexed images have a length 1 channel axis
-						imgMeta.setIndexed(true);
-						axisLengths.add(1l);
-						axes.add(FormatTools.createAxis(Axes.CHANNEL));
-					}
+					// parse non-planar channel dimensions
+					parseChannelDimensions(reader, imgMeta, DesiredChannels.NONPLANAR,
+						axes, axisLengths);
 					break;
 				case 'T':
 					if (reader.getSizeT() > 1) {
@@ -501,17 +504,60 @@ public class BioFormatsFormat extends AbstractFormat {
 		}
 	}
 
+	/**
+	 * Bio-Formats groups RGB and non-RGB channels together. To map back to SCIFIO
+	 * there are three classes of channels we want to extract:
+	 * <ul>
+	 * <li>RGB interleaved</li>
+	 * <li>RGB non-interleaved</li>
+	 * <li>Non-RGB, non-interleaved</li>
+	 * </ul>
+	 * The first two of these will be planar axes in SCIFIO (note they are
+	 * mutually exclusive with each other). The third is a non-planar Channel
+	 * axis.
+	 */
 	private static void parseChannelDimensions(final IFormatReader reader,
-		final ImageMetadata meta, final boolean interleaved,
+		final ImageMetadata meta, final DesiredChannels query,
 		final ArrayList<CalibratedAxis> axisTypes, final LongArray axisLengths)
 	{
-		final int[] cDimLengths = reader.getChannelDimLengths();
-		final String[] cDimTypes = reader.getChannelDimTypes();
-		for (int subC = 0; subC < cDimLengths.length; subC++) {
-			if (interleaved != reader.isInterleaved(subC)) continue;
-			if (interleaved) meta.setPlanarAxisCount(meta.getPlanarAxisCount() + 1);
-			axisTypes.add(FormatTools.createAxis(Axes.get(cDimTypes[subC])));
-			axisLengths.add((long) cDimLengths[subC]);
+		// FIXME: this logic discards any of the sub-channel labels known by
+		// Bio-Formats.. we need to find a way to account for them and properly
+		// transfer labels
+		if (query == DesiredChannels.INTERLEAVED || query == DesiredChannels.PLANAR) {
+			if (reader.isInterleaved() == (query == DesiredChannels.INTERLEAVED)) return;
+			long length = 1;
+			if (reader.getRGBChannelCount() > 1) {
+				length = reader.getRGBChannelCount();
+			}
+			else if (reader.isIndexed() && reader.getEffectiveSizeC() == 1) {
+				// If effectiveSizeC and RGBChannelCount are both 1, we stick the 
+				// indexed Channel axis as a planar axis.
+				meta.setIndexed(true);
+			}
+			else {
+				// Reader isn't indexed and doesn't have a significant RGB channel count
+				return;
+			}
+
+			// We use Axes.CHANNEL for RGB channels
+			axisTypes.add(FormatTools.createAxis(Axes.CHANNEL));
+			meta.setPlanarAxisCount(meta.getPlanarAxisCount() + 1);
+			axisLengths.add(length);
+		}
+		else if (query == DesiredChannels.NONPLANAR) {
+			if (reader.getEffectiveSizeC() > 1) {
+				meta.setIndexed(reader.isIndexed());
+				AxisType type = null;
+				if (reader.getRGBChannelCount() > 1) {
+					// Axes.CHANNEL was already used for RGB channels
+					type = Axes.get("Channels-planar");
+				}
+				else {
+					type = Axes.CHANNEL;
+				}
+				axisTypes.add(FormatTools.createAxis(type));
+				axisLengths.add((long) reader.getEffectiveSizeC());
+			}
 		}
 	}
 }
