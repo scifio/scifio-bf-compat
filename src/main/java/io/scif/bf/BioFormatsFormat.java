@@ -40,6 +40,7 @@ import io.scif.MetaTable;
 import io.scif.common.RandomAccessInputStreamWrapper;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
+import io.scif.ome.services.OMEXMLService;
 import io.scif.util.FormatTools;
 
 import java.io.IOException;
@@ -48,6 +49,7 @@ import java.util.ArrayList;
 import loci.formats.ClassList;
 import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
+import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadataImpl;
 import net.imglib2.display.ColorTable;
@@ -56,9 +58,11 @@ import net.imglib2.display.ColorTable8;
 import net.imglib2.meta.Axes;
 import net.imglib2.meta.AxisType;
 import net.imglib2.meta.CalibratedAxis;
+import ome.xml.model.primitives.Color;
 import ome.xml.model.primitives.PositiveFloat;
 
 import org.scijava.Priority;
+import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.LongArray;
 
@@ -154,10 +158,10 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		// -- Fields --
 
-		private IFormatReader reader;
+		@Parameter
+		private OMEXMLService omexmlService;
 
-		private ColorTable colorTable;
-		private boolean[] checkedColorTable;
+		private IFormatReader reader;
 
 		private String formatName;
 
@@ -183,7 +187,6 @@ public class BioFormatsFormat extends AbstractFormat {
 			}
 			formatName = super.getFormatName();
 			formatName += " - Bio-Formats reader used: " + reader.getFormat();
-			checkedColorTable = null;
 		}
 
 		@Override
@@ -205,32 +208,95 @@ public class BioFormatsFormat extends AbstractFormat {
 		public ColorTable getColorTable(int imageIndex, final long planeIndex) {
 			if (imageIndex >= reader.getSeriesCount()) imageIndex = 0;
 
-			if (!checkedColorTable(imageIndex)) {
-				try {
-					if (reader.get16BitLookupTable() != null) {
-						colorTable = new ColorTable16(reader.get16BitLookupTable());
-					}
-					else if (reader.get8BitLookupTable() != null) {
-						colorTable = new ColorTable8(reader.get8BitLookupTable());
-					}
+			ColorTable ct = null;
+			final int oldIndex = reader.getSeries();
+			reader.setSeries(imageIndex);
+
+			// See if the reader has a ColorTable attached already
+			try {
+				if (reader.get16BitLookupTable() != null) {
+					ct = new ColorTable16(reader.get16BitLookupTable());
 				}
-				catch (loci.formats.FormatException e) {
-					log().error(e);
+				else if (reader.get8BitLookupTable() != null) {
+					ct = new ColorTable8(reader.get8BitLookupTable());
 				}
-				catch (IOException e) {
-					log().error(e);
-				}
-				checkedColorTable[imageIndex] = true;
+			}
+			catch (loci.formats.FormatException e) {
+				log().error(e);
+			}
+			catch (IOException e) {
+				log().error(e);
 			}
 
-			return colorTable;
+			// Check the metadata to see if there is a Color entry in the XML
+			if (ct == null) {
+				final MetadataRetrieve retrieve =
+					omexmlService.asRetrieve(reader.getMetadataStore());
+				if (retrieve != null) {
+					long channelIndex =
+						FormatTools.getNonPlanarAxisPosition(this, imageIndex, planeIndex,
+							Axes.CHANNEL);
+					if (channelIndex >= 0 && retrieve.getChannelCount(imageIndex) > 0 &&
+						channelIndex < retrieve.getChannelCount(imageIndex))
+					{
+						final Color channelColor =
+							retrieve.getChannelColor(imageIndex, (int) channelIndex);
+						boolean eightBit =
+							reader.getPixelType() == FormatTools.UINT8 ||
+								reader.getPixelType() == FormatTools.INT8;
+						ct = makeColorTable(channelColor, eightBit);
+					}
+				}
+			}
+
+			reader.setSeries(oldIndex);
+
+			return ct;
 		}
 
-		private boolean checkedColorTable(final int imageIndex) {
-			if (checkedColorTable == null) checkedColorTable =
-				new boolean[reader.getSeriesCount()];
-
-			return checkedColorTable[imageIndex];
+		/**
+		 * Turns a {@link Color} into a {@link ColorTable}. If {@code eightBit} is
+		 * true, then a {@link ColorTable8} will be made - otherwise a
+		 * {@link ColorTable16}.
+		 */
+		private ColorTable
+			makeColorTable(final Color color, final boolean eightBit)
+		{
+			if (color == null) return null;
+			final int red = color.getRed();
+			final int green = color.getGreen();
+			final int blue = color.getBlue();
+			ColorTable lut = null;
+			final int lutLength = 256;
+			final int lutDivisor = lutLength - 1;
+			if (eightBit) {
+				// Make an 8-bit color table. The Color object is 8-bit, so this maps
+				// perfectly
+				byte[] r = new byte[lutLength];
+				byte[] g = new byte[lutLength];
+				byte[] b = new byte[lutLength];
+				for (int i = 0; i < lutLength; i++) {
+					r[i] = (byte) (i * red / lutDivisor);
+					g[i] = (byte) (i * green / lutDivisor);
+					b[i] = (byte) (i * blue / lutDivisor);
+				}
+				lut = new ColorTable8(r, g, b);
+			}
+			else {
+				// Make a 16-bit color table. Since the Color object is 8-bit, we
+				// have to chunk it across the 16-bit lut.
+				short[] r = new short[65536];
+				short[] g = new short[65536];
+				short[] b = new short[65536];
+				for (int i = 0; i < lutLength; i++) {
+					int index = i * (65536 / 256);
+					r[index] = (short) ((i * red / lutDivisor) << 8);
+					g[index] = (short) ((i * green / lutDivisor) << 8);
+					b[index] = (short) ((i * blue / lutDivisor) << 8);
+				}
+				lut = new ColorTable16(r, g, b);
+			}
+			return lut;
 		}
 	}
 
