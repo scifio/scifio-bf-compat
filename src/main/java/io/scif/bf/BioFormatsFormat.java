@@ -43,6 +43,7 @@ import io.scif.io.RandomAccessInputStream;
 import io.scif.ome.services.OMEXMLService;
 import io.scif.util.FormatTools;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -312,7 +313,7 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		@Override
 		public boolean isFormat(final String name, final SCIFIOConfig config) {
-			if (!realSource(name)) return false;
+			if (!new File(name).exists() || !realSource(name)) return false;
 			return createImageReader(this).isThisType(name, config.checkerIsOpen());
 		}
 
