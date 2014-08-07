@@ -142,11 +142,6 @@ public class BioFormatsFormat extends AbstractFormat {
 	}
 
 	@Override
-	public String getFormatName() {
-		return "Bio-Formats Compatibility Format";
-	}
-
-	@Override
 	public String[] getSuffixes() {
 		// NB: the suffixes may change, so this array must always be re-generated.
 		return createImageReader().getSuffixes();
