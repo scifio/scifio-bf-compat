@@ -46,6 +46,9 @@ import io.scif.util.FormatTools;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.WeakHashMap;
 
 import loci.formats.ClassList;
 import loci.formats.IFormatReader;
@@ -162,6 +165,15 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		private String formatName;
 
+		private Map<short[][], ColorTable> colorTables16 =
+			new WeakHashMap<short[][], ColorTable>();
+
+		private Map<byte[][], ColorTable> colorTables8 =
+			new WeakHashMap<byte[][], ColorTable>();
+
+		private Map<MetadataRetrieve, ColorTable> colorTableXML =
+			new WeakHashMap<MetadataRetrieve, ColorTable>();
+
 		// -- BioFormatsFormatMetadata methods --
 
 		// -- Getters and Setters --
@@ -212,10 +224,24 @@ public class BioFormatsFormat extends AbstractFormat {
 			// See if the reader has a ColorTable attached already
 			try {
 				if (reader.get16BitLookupTable() != null) {
-					ct = new ColorTable16(reader.get16BitLookupTable());
+					short[][] shortTable = reader.get16BitLookupTable();
+					// Look up cached table
+					ct = colorTables16.get(shortTable);
+					if (ct == null) {
+						// Create a new table and map it
+						ct = new ColorTable16(shortTable);
+						colorTables16.put(shortTable, ct);
+					}
 				}
 				else if (reader.get8BitLookupTable() != null) {
-					ct = new ColorTable8(reader.get8BitLookupTable());
+					byte[][] byteTable = reader.get8BitLookupTable();
+					// Look up cached table
+					ct = colorTables8.get(byteTable);
+					if (ct == null) {
+						// Create a new table and map it
+						ct = new ColorTable8(byteTable);
+						colorTables8.put(byteTable, ct);
+					}
 				}
 			}
 			catch (loci.formats.FormatException e) {
@@ -230,18 +256,22 @@ public class BioFormatsFormat extends AbstractFormat {
 				final MetadataRetrieve retrieve =
 					omexmlService.asRetrieve(reader.getMetadataStore());
 				if (retrieve != null) {
-					long channelIndex =
-						FormatTools.getNonPlanarAxisPosition(this, imageIndex, planeIndex,
-							Axes.CHANNEL);
-					if (channelIndex >= 0 && retrieve.getChannelCount(imageIndex) > 0 &&
-						channelIndex < retrieve.getChannelCount(imageIndex))
-					{
-						final Color channelColor =
-							retrieve.getChannelColor(imageIndex, (int) channelIndex);
-						boolean eightBit =
-							reader.getPixelType() == FormatTools.UINT8 ||
-								reader.getPixelType() == FormatTools.INT8;
-						ct = makeColorTable(channelColor, eightBit);
+					ct = colorTableXML.get(retrieve);
+					if (ct == null) {
+						long channelIndex =
+							FormatTools.getNonPlanarAxisPosition(this, imageIndex,
+								planeIndex, Axes.CHANNEL);
+						if (channelIndex >= 0 && retrieve.getChannelCount(imageIndex) > 0 &&
+							channelIndex < retrieve.getChannelCount(imageIndex))
+						{
+							final Color channelColor =
+								retrieve.getChannelColor(imageIndex, (int) channelIndex);
+							boolean eightBit =
+								reader.getPixelType() == FormatTools.UINT8 ||
+									reader.getPixelType() == FormatTools.INT8;
+							ct = makeColorTable(channelColor, eightBit);
+							colorTableXML.put(retrieve, ct);
+						}
 					}
 				}
 			}
