@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>scifio-bf-compat</artifactId>
-	<version>1.8.4-SNAPSHOT</version>
+	<version>1.8.4</version>
 
 	<name>SCIFIO-Bio-Formats Compatibility Format</name>
 	<description>Compatibility layer for using un-converted Bio-Formats readers
@@ -87,7 +87,7 @@
 	<scm>
 		<connection>scm:git:git://github.com/scifio/scifio-bf-compat</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio-bf-compat</developerConnection>
-		<tag>HEAD</tag>
+		<tag>scifio-bf-compat-1.8.4</tag>
 		<url>http://github.com/scifio/scifio-bf-compat</url>
 	</scm>
 
