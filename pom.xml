@@ -10,7 +10,7 @@
 	</parent>
 
 	<artifactId>scifio-bf-compat</artifactId>
-	<version>1.8.5-SNAPSHOT</version>
+	<version>1.9.1-SNAPSHOT</version>
 
 	<name>SCIFIO-Bio-Formats Compatibility Format</name>
 	<description>Compatibility layer for using un-converted Bio-Formats readers
