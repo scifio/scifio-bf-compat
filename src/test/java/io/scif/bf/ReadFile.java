@@ -35,7 +35,8 @@ import java.io.IOException;
 
 import javax.swing.JFileChooser;
 
-import net.imglib2.meta.AxisType;
+import net.imagej.axis.AxisType;
+
 
 /**
  * A simple manual test for the SCIFIO Bio-Formats compatibility layer.
