@@ -37,7 +37,7 @@ import io.scif.HasColorTable;
 import io.scif.HasFormat;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
-import io.scif.common.RandomAccessInputStreamWrapper;
+import io.scif.bf.wrapper.RandomAccessInputStreamWrapper;
 import io.scif.config.SCIFIOConfig;
 import io.scif.io.RandomAccessInputStream;
 import io.scif.ome.services.OMEXMLService;

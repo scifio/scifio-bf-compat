@@ -21,7 +21,7 @@
  * #L%
  */
 
-package io.scif.common;
+package io.scif.bf.wrapper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
@@ -31,31 +31,28 @@ import loci.common.RandomAccessInputStream;
 /**
  * Wrapper class to convert {@link io.scif.io.RandomAccessInputStream} to
  * {@link loci.common.RandomAccessInputStream}.
- *
- * @deprecated Use {@link io.scif.bf.wrapper.RandomAccessInputStreamWrapper}
  */
-@Deprecated
 public class RandomAccessInputStreamWrapper extends
 	RandomAccessInputStream
 {
 
 	// -- Fields --
 
-	private final io.scif.bf.wrapper.RandomAccessInputStreamWrapper wrapper;
+	private final io.scif.io.RandomAccessInputStream rais;
 
 	// -- Constructors --
 
 	public RandomAccessInputStreamWrapper(
 		final io.scif.io.RandomAccessInputStream rais) throws IOException
 	{
-		super((String)null);
-		wrapper = new io.scif.bf.wrapper.RandomAccessInputStreamWrapper(rais);
+		super((String) null);
+		this.rais = rais;
 	}
 
 	// -- RandomAccessInputStreamWrapper API Methods --
 
 	public io.scif.io.RandomAccessInputStream unwrap() {
-		return wrapper.unwrap();
+		return rais;
 	}
 
 	// -- RandomAccessInputStream API methods --
