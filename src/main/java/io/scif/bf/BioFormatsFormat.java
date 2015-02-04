@@ -46,6 +46,7 @@ import io.scif.util.FormatTools;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map;
 import java.util.WeakHashMap;
 
@@ -111,7 +112,11 @@ public class BioFormatsFormat extends AbstractFormat {
 	 * List of Bio-Formats reader classes, excluding the {@link #DO_NOT_CONVERT}
 	 * blacklist.
 	 */
-	private final ClassList<IFormatReader> readerClasses;
+	private ClassList<IFormatReader> readerClasses;
+
+	private ImageReader cachedReader;
+
+	private int cachedReaderHash;
 
 	// -- Constructors --
 
@@ -120,14 +125,28 @@ public class BioFormatsFormat extends AbstractFormat {
 	 * readers.txt.
 	 */
 	public BioFormatsFormat() {
-		readerClasses = compileReaderClasses();
+		cacheReaderClasses();
 	}
 
 	// -- BioFormatsFormat API Methods --
 
 	/** Creates a new Bio-Formats {@link ImageReader}. */
 	public ImageReader createImageReader() {
+		// Check for updated reader classes
+		cacheReaderClasses();
 		return new ImageReader(readerClasses);
+	}
+
+	/**
+	 * Gets a cached {@link ImageReader}, suitable for using for format checking
+	 * or suffix generation. Will only instantiate an {@code ImageReader} if
+	 * necessary.
+	 */
+	public ImageReader getCachedImageReader() {
+		if (cacheReaderClasses() || cachedReader == null) {
+			cachedReader = createImageReader();
+		}
+		return cachedReader;
 	}
 
 	/** Adds the given reader class to this format's supported reader list. */
@@ -146,7 +165,7 @@ public class BioFormatsFormat extends AbstractFormat {
 	@Override
 	public String[] getSuffixes() {
 		// NB: the suffixes may change, so this array must always be re-generated.
-		return createImageReader().getSuffixes();
+		return getCachedImageReader().getSuffixes();
 	}
 
 	// -- Nested Classes --
@@ -333,13 +352,13 @@ public class BioFormatsFormat extends AbstractFormat {
 		@Override
 		public boolean isFormat(final String name) {
 			if (!realSource(name)) return false;
-			return createImageReader(this).isThisType(name);
+			return getCachedImageReader(this).isThisType(name);
 		}
 
 		@Override
 		public boolean isFormat(final String name, final SCIFIOConfig config) {
 			if (!new File(name).exists() || !realSource(name)) return false;
-			return createImageReader(this).isThisType(name, config.checkerIsOpen());
+			return getCachedImageReader(this).isThisType(name, config.checkerIsOpen());
 		}
 
 		@Override
@@ -347,7 +366,7 @@ public class BioFormatsFormat extends AbstractFormat {
 			throws IOException
 		{
 			if (!realSource(stream)) return false;
-			return createImageReader(this).isThisType(
+			return getCachedImageReader(this).isThisType(
 				new RandomAccessInputStreamWrapper(stream));
 		}
 
@@ -379,7 +398,7 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		@Override
 		public boolean checkHeader(final byte[] block) {
-			return createImageReader(this).isThisType(block);
+			return getCachedImageReader(this).isThisType(block);
 		}
 
 	}
@@ -453,19 +472,30 @@ public class BioFormatsFormat extends AbstractFormat {
 	/**
 	 * Compiles the list of Bio-Formats reader classes, excluding the
 	 * {@link #DO_NOT_CONVERT} blacklist.
+	 *
+	 * @return true if the reader class list was re-generated.
 	 */
-	private ClassList<IFormatReader> compileReaderClasses() {
-		final ClassList<IFormatReader> targetClasses =
-			new ClassList<IFormatReader>(IFormatReader.class);
+	private boolean cacheReaderClasses() {
+		final Class<? extends IFormatReader>[] defaultClasses =
+			ImageReader.getDefaultReaderClasses().getClasses();
+		final int currentHash = Arrays.hashCode(defaultClasses);
 
-		// add reader classes to the list, excluding the blacklist
-		final ClassList<IFormatReader> defaultClasses =
-			ImageReader.getDefaultReaderClasses();
-		for (final Class<? extends IFormatReader> c : defaultClasses.getClasses()) {
-			if (convert(c)) targetClasses.addClass(c);
+		// If our classList is uninitialized, or the Bio-Formats classList has
+		// changed, compute the current reader classes.
+		if (readerClasses == null || cachedReaderHash != currentHash) {
+			final ClassList<IFormatReader> targetClasses =
+				new ClassList<IFormatReader>(IFormatReader.class);
+
+			// add reader classes to the list, excluding the blacklist
+			for (final Class<? extends IFormatReader> c : defaultClasses) {
+				if (convert(c)) targetClasses.addClass(c);
+			}
+			readerClasses = targetClasses;
+			cachedReaderHash = currentHash;
+
+			return true;
 		}
-
-		return targetClasses;
+		return false;
 	}
 
 	/** Returns false if this reader class already exists in SCIFIO. */
@@ -484,6 +514,14 @@ public class BioFormatsFormat extends AbstractFormat {
 	 */
 	private static ImageReader createImageReader(final HasFormat thing) {
 		return ((BioFormatsFormat) thing.getFormat()).createImageReader();
+	}
+
+	/**
+	 * As {@link #createImageReader(HasFormat)} but will use
+	 * {@link #getCachedImageReader()} instead.
+	 */
+	private static ImageReader getCachedImageReader(final HasFormat thing) {
+		return ((BioFormatsFormat) thing.getFormat()).getCachedImageReader();
 	}
 
 	/**
