@@ -67,7 +67,7 @@ public class BioFormatsTranslator {
 		}
 
 		@Override
-		protected void translateOMEXML(final BioFormatsFormat.Metadata source,
+		protected void translateFormatMetadata(final BioFormatsFormat.Metadata source,
 			final OMEMetadata dest)
 		{
 			// Just copy the root over
