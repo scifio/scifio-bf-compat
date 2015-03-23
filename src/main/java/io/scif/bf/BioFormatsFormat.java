@@ -561,13 +561,13 @@ public class BioFormatsFormat extends AbstractFormat {
 					axis = FormatTools.createAxis(Axes.X);
 					axes.add(axis);
 					axisLengths.add((long) reader.getSizeX());
-					calibarte(store.getPixelsPhysicalSizeX(s), axis, stageLabelX);
+					calibrate(store.getPixelsPhysicalSizeX(s), axis, stageLabelX);
 					break;
 				case 'Y':
 					axis = FormatTools.createAxis(Axes.Y);
 					axes.add(axis);
 					axisLengths.add((long) reader.getSizeY());
-					calibarte(store.getPixelsPhysicalSizeY(s), axis, stageLabelY);
+					calibrate(store.getPixelsPhysicalSizeY(s), axis, stageLabelY);
 					// Ensure non-interleaved RGB channels are parsed after the Y axis
 					parseChannelDimensions(reader, imgMeta, DesiredChannels.PLANAR, axes,
 						axisLengths);
@@ -577,7 +577,7 @@ public class BioFormatsFormat extends AbstractFormat {
 					if (reader.getSizeZ() > 1) {
 						axes.add(axis);
 						axisLengths.add((long) reader.getSizeZ());
-						calibarte(store.getPixelsPhysicalSizeZ(s), axis, stageLabelZ);
+						calibrate(store.getPixelsPhysicalSizeZ(s), axis, stageLabelZ);
 					}
 					break;
 				case 'C':
@@ -622,7 +622,7 @@ public class BioFormatsFormat extends AbstractFormat {
 	 * Calibrates the given axis if the physical pixel size is non-null
 	 * @param stageLabel 
 	 */
-	private static void calibarte(PositiveFloat pixelsPhysicalSize,
+	private static void calibrate(PositiveFloat pixelsPhysicalSize,
 		CalibratedAxis axis, Double stageLabel)
 	{
 		if (pixelsPhysicalSize != null) {
