@@ -62,8 +62,8 @@ import net.imagej.axis.CalibratedAxis;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
+import ome.units.quantity.Length;
 import ome.xml.model.primitives.Color;
-import ome.xml.model.primitives.PositiveFloat;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
@@ -546,7 +546,7 @@ public class BioFormatsFormat extends AbstractFormat {
 		// CTR HACK: Recover gracefully when StageLabel element is missing.
 		// This avoids a problem with the OMEXMLMetadataImpl implementation,
 		// which currently does not check for null on the StageLabel object.
-		Double stageLabelX = null, stageLabelY = null, stageLabelZ = null;
+		Length stageLabelX = null, stageLabelY = null, stageLabelZ = null;
 		try {
 			stageLabelX = store.getStageLabelX(s);
 			stageLabelY = store.getStageLabelY(s);
@@ -622,12 +622,12 @@ public class BioFormatsFormat extends AbstractFormat {
 	 * Calibrates the given axis if the physical pixel size is non-null
 	 * @param stageLabel 
 	 */
-	private static void calibrate(PositiveFloat pixelsPhysicalSize,
-		CalibratedAxis axis, Double stageLabel)
+	private static void calibrate(Length pixelsPhysicalSize,
+		CalibratedAxis axis, Length stageLabel)
 	{
 		if (pixelsPhysicalSize != null) {
-			FormatTools.calibrate(axis, pixelsPhysicalSize.getValue(),
-				stageLabel == null ? 0.0 : stageLabel);
+			FormatTools.calibrate(axis, pixelsPhysicalSize.value().doubleValue(),
+				stageLabel == null ? 0.0 : stageLabel.value().doubleValue());
 		}
 	}
 
