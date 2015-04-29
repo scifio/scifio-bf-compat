@@ -1,3 +1,5 @@
+![](http://jenkins.imagej.net/job/SCIFIO-BF-Compat/lastBuild/badge/icon)
+
 scifio-bf-compat
 ================
 
