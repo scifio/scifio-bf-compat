@@ -1,4 +1,4 @@
-![](http://jenkins.imagej.net/job/SCIFIO-BF-Compat/lastBuild/badge/icon)
+[![](http://jenkins.imagej.net/job/SCIFIO-BF-Compat/lastBuild/badge/icon)](http://jenkins.imagej.net/job/SCIFIO-BF-Compat/)
 
 scifio-bf-compat
 ================
