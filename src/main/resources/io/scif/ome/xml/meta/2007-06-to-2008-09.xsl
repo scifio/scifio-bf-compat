@@ -4,7 +4,7 @@
   SCIFIO Bio-Formats compatibility format.
   %%
   Copyright (C) 2013 - 2016 Board of Regents of the University of
-  Wisconsin-Madison
+  Wisconsin-Madison.
   %%
   This program is free software: you can redistribute it and/or modify
   it under the terms of the GNU General Public License as
