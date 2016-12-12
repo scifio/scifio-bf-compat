@@ -3,18 +3,24 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>io.scif</groupId>
-		<artifactId>pom-scifio</artifactId>
-		<version>7.0.0</version>
+		<groupId>org.scijava</groupId>
+		<artifactId>pom-scijava</artifactId>
+		<version>12.0.0</version>
 		<relativePath />
 	</parent>
 
+	<groupId>io.scif</groupId>
 	<artifactId>scifio-bf-compat</artifactId>
 	<version>2.0.1-SNAPSHOT</version>
 
 	<name>SCIFIO-Bio-Formats Compatibility Format</name>
 	<description>Compatibility layer for using un-converted Bio-Formats readers in SCIFIO applications.</description>
+	<url>http://imagej.net/SCIFIO</url>
 	<inceptionYear>2013</inceptionYear>
+	<organization>
+		<name>SCIFIO</name>
+		<url>http://scif.io/</url>
+	</organization>
 	<licenses>
 		<license>
 			<name>GNU General Public License v2+</name>
@@ -51,6 +57,13 @@
 		</contributor>
 	</contributors>
 
+	<mailingLists>
+		<mailingList>
+			<name>ImageJ Forum</name>
+			<archive>http://forum.imagej.net/</archive>
+		</mailingList>
+	</mailingLists>
+
 	<scm>
 		<connection>scm:git:git://github.com/scifio/scifio-bf-compat</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio-bf-compat</developerConnection>
@@ -65,6 +78,14 @@
 		<system>Jenkins</system>
 		<url>http://jenkins.imagej.net/job/SCIFIO-BF-Compat/</url>
 	</ciManagement>
+
+	<properties>
+		<package-name>io.scif.bf</package-name>
+		<license.licenseName>gpl_v2</license.licenseName>
+		<license.copyrightOwners>Board of Regents of the University of
+Wisconsin-Madison.</license.copyrightOwners>
+		<license.projectName>SCIFIO Bio-Formats compatibility format.</license.projectName>
+	</properties>
 
 	<repositories>
 		<repository>
