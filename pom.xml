@@ -23,8 +23,7 @@
 	</organization>
 	<licenses>
 		<license>
-			<name>GNU General Public License v2+</name>
-			<url>http://www.gnu.org/licenses/gpl-2.0.txt</url>
+			<name>Simplified BSD License</name>
 			<distribution>repo</distribution>
 		</license>
 	</licenses>
@@ -81,7 +80,7 @@
 
 	<properties>
 		<package-name>io.scif.bf</package-name>
-		<license.licenseName>gpl_v2</license.licenseName>
+		<license.licenseName>bsd_2</license.licenseName>
 		<license.copyrightOwners>Board of Regents of the University of
 Wisconsin-Madison.</license.copyrightOwners>
 		<license.projectName>SCIFIO Bio-Formats compatibility format.</license.projectName>
@@ -122,17 +121,4 @@ Wisconsin-Madison.</license.copyrightOwners>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>license-maven-plugin</artifactId>
-				<configuration>
-					<licenseName>gpl_v2</licenseName>
-					<projectName>SCIFIO Bio-Formats compatibility format.</projectName>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
 </project>
