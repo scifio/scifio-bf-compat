@@ -1,4 +1,4 @@
-[![](http://jenkins.imagej.net/job/SCIFIO-BF-Compat/lastBuild/badge/icon)](http://jenkins.imagej.net/job/SCIFIO-BF-Compat/)
+[![](https://travis-ci.org/scifio/scifio-bf-compat.svg?branch=master)](https://travis-ci.org/scifio/scifio-bf-compat)
 
 scifio-bf-compat
 ================

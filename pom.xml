@@ -74,8 +74,8 @@
 		<url>https://github.com/scifio/scifio-bf-compat/issues</url>
 	</issueManagement>
 	<ciManagement>
-		<system>Jenkins</system>
-		<url>http://jenkins.imagej.net/job/SCIFIO-BF-Compat/</url>
+		<system>Travis CI</system>
+		<url>https://travis-ci.org/scifio/scifio-bf-compat</url>
 	</ciManagement>
 
 	<properties>
