@@ -27,10 +27,10 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Contains translators from {@link io.scif.bf.BioFormatsFormat} to OME-XML.
  * 
  * @author Mark Hiner
  */
-
 package io.scif.bf.ome;

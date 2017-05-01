@@ -27,11 +27,11 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Contains wrapping and utility classes needed for BF &lt;-&gt; SCIFIO
  * conversion.
  * 
  * @author Mark Hiner
  */
-
 package io.scif.bf.wrapper;

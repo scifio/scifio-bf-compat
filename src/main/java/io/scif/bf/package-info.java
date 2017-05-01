@@ -27,6 +27,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  * #L%
  */
+
 /**
  * Contains Bio-Formats format, wrapping Bio-Formats proprietary readers
  * as a SCIFIO Format.
