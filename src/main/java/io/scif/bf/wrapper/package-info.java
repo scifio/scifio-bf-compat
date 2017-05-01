@@ -28,7 +28,8 @@
  * #L%
  */
 /**
- * Contains wrapping and utility classes needed for BF <-> SCIFIO conversion.
+ * Contains wrapping and utility classes needed for BF &lt;-&gt; SCIFIO
+ * conversion.
  * 
  * @author Mark Hiner
  */
