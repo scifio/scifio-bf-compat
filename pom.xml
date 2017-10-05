@@ -86,6 +86,9 @@ Wisconsin-Madison.</license.copyrightOwners>
 		<license.projectName>SCIFIO Bio-Formats compatibility format.</license.projectName>
 
 		<scifio-ome-xml.version>0.14.2</scifio-ome-xml.version>
+
+		<!-- NB: Deploy releases to the ImageJ Maven repository. -->
+		<releaseProfiles>deploy-to-imagej</releaseProfiles>
 	</properties>
 
 	<repositories>
