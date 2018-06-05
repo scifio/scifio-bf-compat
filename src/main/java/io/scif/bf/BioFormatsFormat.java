@@ -63,19 +63,22 @@ import loci.formats.ImageReader;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadataImpl;
+
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
 import net.imagej.axis.CalibratedAxis;
+import net.imglib2.Interval;
 import net.imglib2.display.ColorTable;
 import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
-import ome.units.quantity.Length;
-import ome.xml.model.primitives.Color;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.LongArray;
+
+import ome.units.quantity.Length;
+import ome.xml.model.primitives.Color;
 
 /**
  * Wraps an {@link ImageReader} in a SCIFIO {@link Format}, allowing proprietary
@@ -443,10 +446,9 @@ public class BioFormatsFormat extends AbstractFormat {
 		// -- Reader API Methods --
 
 		@Override
-		public ByteArrayPlane openPlane(final int imageIndex,
-			final long planeIndex, final ByteArrayPlane plane, final long[] offsets,
-			final long[] lengths, final SCIFIOConfig config) throws FormatException,
-			IOException
+		public ByteArrayPlane openPlane(final int imageIndex, final long planeIndex,
+			final ByteArrayPlane plane, final Interval bounds,
+			final SCIFIOConfig config) throws FormatException, IOException
 		{
 			final IFormatReader reader = getMetadata().getReader();
 			reader.setSeries(imageIndex);
@@ -454,8 +456,8 @@ public class BioFormatsFormat extends AbstractFormat {
 				Metadata meta = getMetadata();
 				final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X), yIndex =
 					meta.get(imageIndex).getAxisIndex(Axes.Y);
-				final int x = (int) offsets[xIndex], y = (int) offsets[yIndex], w =
-					(int) lengths[xIndex], h = (int) lengths[yIndex];
+				final int x = (int) bounds.min(xIndex), y = (int) bounds.min(yIndex), //
+						w = (int) bounds.dimension(xIndex), h = (int) bounds.dimension(yIndex);
 				reader.openBytes((int)planeIndex, plane.getBytes(), x, y, w, h);
 
 				plane.setColorTable(getMetadata().getColorTable(imageIndex, planeIndex));
