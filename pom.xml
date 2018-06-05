@@ -11,7 +11,7 @@
 
 	<groupId>io.scif</groupId>
 	<artifactId>scifio-bf-compat</artifactId>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0.1-SNAPSHOT</version>
 
 	<name>SCIFIO-Bio-Formats Compatibility Format</name>
 	<description>Compatibility layer for using un-converted Bio-Formats readers in SCIFIO applications.</description>
