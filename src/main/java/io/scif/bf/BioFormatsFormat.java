@@ -87,13 +87,13 @@ import ome.xml.model.primitives.Color;
  * @author Mark Hiner hinerm at gmail.com
  */
 @Plugin(type = Format.class, name = "Bio-Formats Compatibility Format",
-	priority = Priority.VERY_HIGH_PRIORITY)
+	priority = Priority.VERY_HIGH)
 public class BioFormatsFormat extends AbstractFormat {
 
 	// Channel mapping enum
 
 	private static enum DesiredChannels {
-		INTERLEAVED, PLANAR, NONPLANAR;
+			INTERLEAVED, PLANAR, NONPLANAR;
 	}
 
 	// -- Constants --
@@ -193,14 +193,12 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		private String formatName;
 
-		private Map<short[][], ColorTable> colorTables16 =
-			new WeakHashMap<short[][], ColorTable>();
+		private Map<String, ColorTable> colorTables16 = new WeakHashMap<>();
 
-		private Map<byte[][], ColorTable> colorTables8 =
-			new WeakHashMap<byte[][], ColorTable>();
+		private Map<String, ColorTable> colorTables8 = new WeakHashMap<>();
 
 		private Map<MetadataRetrieve, ColorTable> colorTableXML =
-			new WeakHashMap<MetadataRetrieve, ColorTable>();
+			new WeakHashMap<>();
 
 		// -- BioFormatsFormatMetadata methods --
 
@@ -245,68 +243,63 @@ public class BioFormatsFormat extends AbstractFormat {
 		public ColorTable getColorTable(int imageIndex, final long planeIndex) {
 			if (imageIndex >= reader.getSeriesCount()) imageIndex = 0;
 
-			ColorTable ct = null;
+			String key = getKey(reader, imageIndex);
+
+			// return early if we have the color table cached
+			ColorTable ct16 = colorTables16.get(key);
+			ColorTable ct8 = colorTables8.get(key);
+			if (ct16 != null || ct8 != null) {
+				return ct16 == null ? ct8 : ct16;
+			}
 			final int oldIndex = reader.getSeries();
 			reader.setSeries(imageIndex);
 
 			// See if the reader has a ColorTable attached already
 			try {
-				if (reader.get16BitLookupTable() != null) {
-					short[][] shortTable = reader.get16BitLookupTable();
-					// Look up cached table
-					ct = colorTables16.get(shortTable);
-					if (ct == null) {
-						// Create a new table and map it
-						ct = new ColorTable16(shortTable);
-						colorTables16.put(shortTable, ct);
-					}
+				// try getting the 16 bit one
+				short[][] table16 = reader.get16BitLookupTable();
+				if (table16 != null) {
+					reader.setSeries(oldIndex);
+					return colorTables16.put(key, new ColorTable16(table16));
 				}
-				else if (reader.get8BitLookupTable() != null) {
-					byte[][] byteTable = reader.get8BitLookupTable();
-					// Look up cached table
-					ct = colorTables8.get(byteTable);
-					if (ct == null) {
-						// Create a new table and map it
-						ct = new ColorTable8(byteTable);
-						colorTables8.put(byteTable, ct);
-					}
+				// try getting 8bit color table
+				byte[][] table8 = reader.get8BitLookupTable();
+				if (table8 != null) {
+					reader.setSeries(oldIndex);
+					return colorTables8.put(key, new ColorTable8(table8));
 				}
 			}
-			catch (loci.formats.FormatException e) {
-				log().error(e);
-			}
-			catch (IOException e) {
+			catch (loci.formats.FormatException | IOException e) {
 				log().error(e);
 			}
 
+			ColorTable ct = null;
 			// Check the metadata to see if there is a Color entry in the XML
-			if (ct == null) {
-				final MetadataRetrieve retrieve =
-					omexmlService.asRetrieve(reader.getMetadataStore());
-				if (retrieve != null) {
-					ct = colorTableXML.get(retrieve);
-					if (ct == null) {
-						long channelIndex =
-							FormatTools.getNonPlanarAxisPosition(this, imageIndex,
-								planeIndex, Axes.CHANNEL);
-						if (channelIndex >= 0 && retrieve.getChannelCount(imageIndex) > 0 &&
-							channelIndex < retrieve.getChannelCount(imageIndex))
-						{
-							final Color channelColor =
-								retrieve.getChannelColor(imageIndex, (int) channelIndex);
-							boolean eightBit =
-								reader.getPixelType() == FormatTools.UINT8 ||
-									reader.getPixelType() == FormatTools.INT8;
-							ct = makeColorTable(channelColor, eightBit);
-							colorTableXML.put(retrieve, ct);
-						}
+			final MetadataRetrieve retrieve = omexmlService.asRetrieve(reader
+				.getMetadataStore());
+			if (retrieve != null) {
+				ct = colorTableXML.get(retrieve);
+				if (ct == null) {
+					long channelIndex = FormatTools.getNonPlanarAxisPosition(this,
+						imageIndex, planeIndex, Axes.CHANNEL);
+					if (channelIndex >= 0 && retrieve.getChannelCount(imageIndex) > 0 &&
+						channelIndex < retrieve.getChannelCount(imageIndex))
+					{
+						final Color channelColor = retrieve.getChannelColor(imageIndex,
+							(int) channelIndex);
+						boolean eightBit = reader.getPixelType() == FormatTools.UINT8 ||
+							reader.getPixelType() == FormatTools.INT8;
+						ct = makeColorTable(channelColor, eightBit);
+						colorTableXML.put(retrieve, ct);
 					}
 				}
 			}
-
-			reader.setSeries(oldIndex);
 
 			return ct;
+		}
+
+		private String getKey(final IFormatReader r, final int imageIndex) {
+			return "r" + r.hashCode() + "img" + imageIndex;
 		}
 
 		/**
@@ -314,8 +307,8 @@ public class BioFormatsFormat extends AbstractFormat {
 		 * true, then a {@link ColorTable8} will be made - otherwise a
 		 * {@link ColorTable16}.
 		 */
-		private ColorTable
-			makeColorTable(final Color color, final boolean eightBit)
+		private ColorTable makeColorTable(final Color color,
+			final boolean eightBit)
 		{
 			if (color == null) return null;
 			final int red = color.getRed();
@@ -368,7 +361,8 @@ public class BioFormatsFormat extends AbstractFormat {
 		@Override
 		public boolean isFormat(final String name, final SCIFIOConfig config) {
 			if (!new File(name).exists() || !realSource(name)) return false;
-			return getCachedImageReader(this).isThisType(name, config.checkerIsOpen());
+			return getCachedImageReader(this).isThisType(name, config
+				.checkerIsOpen());
 		}
 
 		@Override
@@ -428,7 +422,8 @@ public class BioFormatsFormat extends AbstractFormat {
 
 				MetadataStore store = new OMEXMLMetadataImpl();
 				reader.setMetadataStore(store);
-				reader.setOriginalMetadataPopulated(config.parserIsSaveOriginalMetadata());
+				reader.setOriginalMetadataPopulated(config
+					.parserIsSaveOriginalMetadata());
 				reader.setMetadataFiltered(config.parserIsFiltered());
 				reader.setGroupFiles(config.groupableIsGroupFiles());
 				reader.setId(stream.getFileName());
@@ -457,10 +452,12 @@ public class BioFormatsFormat extends AbstractFormat {
 				final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X), yIndex =
 					meta.get(imageIndex).getAxisIndex(Axes.Y);
 				final int x = (int) bounds.min(xIndex), y = (int) bounds.min(yIndex), //
-						w = (int) bounds.dimension(xIndex), h = (int) bounds.dimension(yIndex);
-				reader.openBytes((int)planeIndex, plane.getBytes(), x, y, w, h);
+						w = (int) bounds.dimension(xIndex), h = (int) bounds.dimension(
+							yIndex);
+				reader.openBytes((int) planeIndex, plane.getBytes(), x, y, w, h);
 
-				plane.setColorTable(getMetadata().getColorTable(imageIndex, planeIndex));
+				plane.setColorTable(getMetadata().getColorTable(imageIndex,
+					planeIndex));
 			}
 			catch (final loci.formats.FormatException e) {
 				throw new FormatException(e);
@@ -485,8 +482,8 @@ public class BioFormatsFormat extends AbstractFormat {
 	 * @return true if the reader class list was re-generated.
 	 */
 	private boolean cacheReaderClasses() {
-		final Class<? extends IFormatReader>[] defaultClasses =
-			ImageReader.getDefaultReaderClasses().getClasses();
+		final Class<? extends IFormatReader>[] defaultClasses = ImageReader
+			.getDefaultReaderClasses().getClasses();
 		final int currentHash = Arrays.hashCode(defaultClasses);
 
 		// If our classList is uninitialized, or the Bio-Formats classList has
@@ -548,7 +545,8 @@ public class BioFormatsFormat extends AbstractFormat {
 		final LongArray axisLengths = new LongArray();
 		imgMeta.setPlanarAxisCount(2);
 		// parse interleaved channel dimensions
-		parseChannelDimensions(reader, imgMeta, DesiredChannels.INTERLEAVED, axes, axisLengths);
+		parseChannelDimensions(reader, imgMeta, DesiredChannels.INTERLEAVED, axes,
+			axisLengths);
 		// parse standard dimensions in dimensional order
 		final String dimOrder = reader.getDimensionOrder().toUpperCase();
 		CalibratedAxis axis = null;
@@ -611,8 +609,8 @@ public class BioFormatsFormat extends AbstractFormat {
 		imgMeta.setPixelType(reader.getPixelType());
 
 		final int bpp = reader.getBitsPerPixel();
-		final int bitsPerPixel =
-			bpp == 0 ? FormatTools.getBitsPerPixel(reader.getPixelType()) : bpp;
+		final int bitsPerPixel = bpp == 0 ? FormatTools.getBitsPerPixel(reader
+			.getPixelType()) : bpp;
 		imgMeta.setBitsPerPixel(bitsPerPixel);
 		imgMeta.setOrderCertain(reader.isOrderCertain());
 		imgMeta.setLittleEndian(reader.isLittleEndian());
@@ -629,10 +627,11 @@ public class BioFormatsFormat extends AbstractFormat {
 
 	/**
 	 * Calibrates the given axis if the physical pixel size is non-null
-	 * @param stageLabel 
+	 * 
+	 * @param stageLabel
 	 */
-	private static void calibrate(Length pixelsPhysicalSize,
-		CalibratedAxis axis, Length stageLabel)
+	private static void calibrate(Length pixelsPhysicalSize, CalibratedAxis axis,
+		Length stageLabel)
 	{
 		if (pixelsPhysicalSize != null) {
 			FormatTools.calibrate(axis, pixelsPhysicalSize.value().doubleValue(),
@@ -659,14 +658,17 @@ public class BioFormatsFormat extends AbstractFormat {
 		// FIXME: this logic discards any of the sub-channel labels known by
 		// Bio-Formats.. we need to find a way to account for them and properly
 		// transfer labels
-		if (query == DesiredChannels.INTERLEAVED || query == DesiredChannels.PLANAR) {
-			if (reader.isInterleaved() != (query == DesiredChannels.INTERLEAVED)) return;
+		if (query == DesiredChannels.INTERLEAVED ||
+			query == DesiredChannels.PLANAR)
+		{
+			if (reader.isInterleaved() != (query == DesiredChannels.INTERLEAVED))
+				return;
 			long length = 1;
 			if (reader.getRGBChannelCount() > 1) {
 				length = reader.getRGBChannelCount();
 			}
 			else if (reader.isIndexed() && reader.getEffectiveSizeC() == 1) {
-				// If effectiveSizeC and RGBChannelCount are both 1, we stick the 
+				// If effectiveSizeC and RGBChannelCount are both 1, we stick the
 				// indexed Channel axis as a planar axis.
 				meta.setIndexed(true);
 			}
