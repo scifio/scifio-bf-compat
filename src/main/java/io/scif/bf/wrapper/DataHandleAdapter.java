@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -28,254 +28,359 @@
  * #L%
  */
 
-package io.scif.common;
+package io.scif.bf.wrapper;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
 
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.location.Location;
+
+import loci.common.IRandomAccess;
 import loci.common.RandomAccessInputStream;
 
 /**
- * Wrapper class to convert {@link io.scif.io.RandomAccessInputStream} to
+ * Adapter class to convert {@link DataHandle} to
  * {@link loci.common.RandomAccessInputStream}.
- *
- * @deprecated Use {@link io.scif.bf.wrapper.RandomAccessInputStreamWrapper}
  */
-@Deprecated
-public class RandomAccessInputStreamWrapper extends
-	RandomAccessInputStream
+public class DataHandleAdapter extends RandomAccessInputStream implements
+	IRandomAccess
 {
 
 	// -- Fields --
 
-	private final io.scif.bf.wrapper.RandomAccessInputStreamWrapper wrapper;
+	private final DataHandle<Location> handle;
 
 	// -- Constructors --
 
-	public RandomAccessInputStreamWrapper(
-		final io.scif.io.RandomAccessInputStream rais) throws IOException
+	public DataHandleAdapter(final DataHandle<Location> handle)
+		throws IOException
 	{
-		super((String)null);
-		wrapper = new io.scif.bf.wrapper.RandomAccessInputStreamWrapper(rais);
+		super(new byte[1]);
+		this.handle = handle;
 	}
 
 	// -- RandomAccessInputStreamWrapper API Methods --
 
-	public io.scif.io.RandomAccessInputStream unwrap() {
-		return wrapper.unwrap();
+	public DataHandle<Location> unwrap() {
+		return handle;
 	}
 
 	// -- RandomAccessInputStream API methods --
 
 	@Override
 	public void setEncoding(final String encoding) {
-		unwrap().setEncoding(encoding);
+		handle.setEncoding(encoding);
 	}
 
 	@Override
 	public void seek(final long pos) throws IOException {
-		unwrap().seek(pos);
+		if (handle != null) {
+			handle.seek(pos);
+		}
 	}
 
 	@Override
 	public long length() throws IOException {
-		return unwrap().length();
+		return handle.length();
 	}
 
 	@Override
 	public void setLength(final long newLength) throws IOException {
-		unwrap().setLength(newLength);
+		handle.setLength(newLength);
 	}
 
 	@Override
 	public long getFilePointer() throws IOException {
-		return unwrap().getFilePointer();
+		return handle.offset();
 	}
 
 	@Override
 	public void close() throws IOException {
-		unwrap().close();
+		handle.close(); // FIXME this could explode us
 	}
 
 	@Override
 	public void order(final boolean little) {
-		unwrap().order(little);
+		handle.setLittleEndian(little);
 	}
 
 	@Override
 	public boolean isLittleEndian() {
-		return unwrap().isLittleEndian();
+		return handle.isLittleEndian();
 	}
 
 	@Override
 	public String readString(final String lastChars) throws IOException {
-		return unwrap().readString(lastChars);
+		return handle.readString(lastChars);
 	}
 
 	@Override
 	public String findString(final String... terminators) throws IOException {
-		return unwrap().findString(terminators);
+		return handle.findString(terminators);
 	}
 
 	@Override
 	public String findString(final boolean saveString,
 		final String... terminators) throws IOException
 	{
-		return unwrap().findString(saveString, terminators);
+		return handle.findString(saveString, terminators);
 	}
 
 	@Override
 	public String findString(final int blockSize, final String... terminators)
 		throws IOException
 	{
-		return unwrap().findString(blockSize, terminators);
+		return handle.findString(blockSize, terminators);
 	}
 
 	@Override
 	public String findString(final boolean saveString, final int blockSize,
 		final String... terminators) throws IOException
 	{
-		return unwrap().findString(saveString, blockSize, terminators);
+		return handle.findString(saveString, blockSize, terminators);
 	}
 
 	// -- DataInput API methods --
 
 	@Override
 	public boolean readBoolean() throws IOException {
-		return unwrap().readBoolean();
+		return handle.readBoolean();
 	}
 
 	@Override
 	public byte readByte() throws IOException {
-		return unwrap().readByte();
+		return handle.readByte();
 	}
 
 	@Override
 	public char readChar() throws IOException {
-		return unwrap().readChar();
+		return handle.readChar();
 	}
 
 	@Override
 	public double readDouble() throws IOException {
-		return unwrap().readDouble();
+		return handle.readDouble();
 	}
 
 	@Override
 	public float readFloat() throws IOException {
-		return unwrap().readFloat();
+		return handle.readFloat();
 	}
 
 	@Override
 	public int readInt() throws IOException {
-		return unwrap().readInt();
+		return handle.readInt();
 	}
 
 	@Override
 	public String readLine() throws IOException {
-		return unwrap().readLine();
+		return handle.readLine();
 	}
 
 	@Override
 	public String readCString() throws IOException {
-		return unwrap().readCString();
+		return handle.readCString();
 	}
 
 	@Override
 	public String readString(final int n) throws IOException {
-		return unwrap().readString(n);
+		return handle.readString(n);
 	}
 
 	@Override
 	public long readLong() throws IOException {
-		return unwrap().readLong();
+		return handle.readLong();
 	}
 
 	@Override
 	public short readShort() throws IOException {
-		return unwrap().readShort();
+		return handle.readShort();
 	}
 
 	@Override
 	public int readUnsignedByte() throws IOException {
-		return unwrap().readUnsignedByte();
+		return handle.readUnsignedByte();
 	}
 
 	@Override
 	public int readUnsignedShort() throws IOException {
-		return unwrap().readUnsignedShort();
+		return handle.readUnsignedShort();
 	}
 
 	@Override
 	public String readUTF() throws IOException {
-		return unwrap().readUTF();
+		return handle.readUTF();
 	}
 
 	@Override
 	public int skipBytes(final int n) throws IOException {
-		return unwrap().skipBytes(n);
+		return handle.skipBytes(n);
 	}
 
 	@Override
 	public int read(final byte[] array) throws IOException {
-		return unwrap().read(array);
+		return handle.read(array);
 	}
 
 	@Override
 	public int read(final byte[] array, final int offset, final int n)
 		throws IOException
 	{
-		return unwrap().read(array, offset, n);
+		return handle.read(array, offset, n);
 	}
 
 	@Override
 	public int read(final ByteBuffer buf) throws IOException {
-		return unwrap().read(buf);
+		return handle.read(buf.array());
 	}
 
 	@Override
 	public int read(final ByteBuffer buf, final int offset, final int n)
 		throws IOException
 	{
-		return unwrap().read(buf, offset, n);
+		return handle.read(buf.array(), offset, n);
 	}
 
 	@Override
 	public void readFully(final byte[] array) throws IOException {
-		unwrap().readFully(array);
+		handle.readFully(array);
 	}
 
 	@Override
 	public void readFully(final byte[] array, final int offset, final int n)
 		throws IOException
 	{
-		unwrap().readFully(array, offset, n);
+		handle.readFully(array, offset, n);
 	}
 
 	// -- InputStream API methods --
 
 	@Override
 	public int read() throws IOException {
-		return unwrap().read();
+		return handle.read();
 	}
 
 	@Override
 	public int available() throws IOException {
-		return unwrap().available();
+		if (handle.offset() < handle.length()) {
+			return (int) (handle.offset() - handle.length());
+		}
+		return 0;
 	}
 
 	@Override
 	public void mark(final int readLimit) {
-		unwrap().mark(readLimit);
+		// NO-Op
 	}
 
 	@Override
 	public boolean markSupported() {
-		return unwrap().markSupported();
+		return false;
 	}
 
 	@Override
 	public void reset() throws IOException {
-		unwrap().reset();
+		handle.seek(0);
 	}
 
+	@Override
+	public void write(final int b) throws IOException {
+		throw readOnly();
+	}
+
+	private IOException readOnly() {
+		return new IOException("DataHandleAdapter is read-only!");
+	}
+
+	@Override
+	public void write(final byte[] b) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void write(final byte[] b, final int off, final int len)
+		throws IOException
+	{
+		throw readOnly();
+	}
+
+	@Override
+	public void writeBoolean(final boolean v) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeByte(final int v) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeShort(final int v) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeChar(final int v) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeInt(final int v) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeLong(final long v) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeFloat(final float v) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeDouble(final double v) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeBytes(final String s) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeChars(final String s) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void writeUTF(final String s) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public ByteOrder getOrder() {
+		return handle.isLittleEndian() ? ByteOrder.LITTLE_ENDIAN
+			: ByteOrder.BIG_ENDIAN;
+	}
+
+	@Override
+	public void setOrder(final ByteOrder order) {
+		handle.setLittleEndian(order == ByteOrder.LITTLE_ENDIAN);
+	}
+
+	@Override
+	public void write(final ByteBuffer buf) throws IOException {
+		throw readOnly();
+	}
+
+	@Override
+	public void write(final ByteBuffer buf, final int off, final int len)
+		throws IOException
+	{
+		throw readOnly();
+	}
 }

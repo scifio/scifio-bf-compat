@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,25 +44,16 @@ import io.scif.HasColorTable;
 import io.scif.HasFormat;
 import io.scif.ImageMetadata;
 import io.scif.MetaTable;
-import io.scif.bf.wrapper.RandomAccessInputStreamWrapper;
+import io.scif.bf.wrapper.DataHandleAdapter;
 import io.scif.config.SCIFIOConfig;
-import io.scif.io.RandomAccessInputStream;
 import io.scif.ome.services.OMEXMLService;
 import io.scif.util.FormatTools;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.WeakHashMap;
-
-import loci.formats.ClassList;
-import loci.formats.IFormatReader;
-import loci.formats.ImageReader;
-import loci.formats.meta.MetadataRetrieve;
-import loci.formats.meta.MetadataStore;
-import loci.formats.ome.OMEXMLMetadataImpl;
 
 import net.imagej.axis.Axes;
 import net.imagej.axis.AxisType;
@@ -73,17 +64,29 @@ import net.imglib2.display.ColorTable16;
 import net.imglib2.display.ColorTable8;
 
 import org.scijava.Priority;
+import org.scijava.io.handle.DataHandle;
+import org.scijava.io.handle.DataHandleService;
+import org.scijava.io.handle.FileHandle;
+import org.scijava.io.location.FileLocation;
+import org.scijava.io.location.Location;
+import org.scijava.log.LogService;
 import org.scijava.plugin.Parameter;
 import org.scijava.plugin.Plugin;
 import org.scijava.util.LongArray;
 
+import loci.formats.ClassList;
+import loci.formats.IFormatReader;
+import loci.formats.ImageReader;
+import loci.formats.meta.MetadataRetrieve;
+import loci.formats.meta.MetadataStore;
+import loci.formats.ome.OMEXMLMetadataImpl;
 import ome.units.quantity.Length;
 import ome.xml.model.primitives.Color;
 
 /**
  * Wraps an {@link ImageReader} in a SCIFIO {@link Format}, allowing proprietary
  * Bio-Formats readers to be used in SCIFIO-based applications.
- * 
+ *
  * @author Mark Hiner hinerm at gmail.com
  */
 @Plugin(type = Format.class, name = "Bio-Formats Compatibility Format",
@@ -108,7 +111,6 @@ public class BioFormatsFormat extends AbstractFormat {
 		"loci.formats.in.JPEG2000Reader", "loci.formats.in.MicromanagerReader",
 		"loci.formats.in.MinimalTiffReader", "loci.formats.in.MNGReader",
 		"loci.formats.in.NRRDReader", "loci.formats.in.OBFReader",
-		"loci.formats.in.OMETiffReader", "loci.formats.in.OMEXMLReader",
 		"loci.formats.in.PCXReader", "loci.formats.in.PGMReader",
 		"loci.formats.in.PictReader", "loci.formats.in.QTReader",
 		"loci.formats.in.SCIFIOReader", "loci.formats.in.SDTReader",
@@ -193,11 +195,11 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		private String formatName;
 
-		private Map<String, ColorTable> colorTables16 = new WeakHashMap<>();
+		private final Map<String, ColorTable> colorTables16 = new WeakHashMap<>();
 
-		private Map<String, ColorTable> colorTables8 = new WeakHashMap<>();
+		private final Map<String, ColorTable> colorTables8 = new WeakHashMap<>();
 
-		private Map<MetadataRetrieve, ColorTable> colorTableXML =
+		private final Map<MetadataRetrieve, ColorTable> colorTableXML =
 			new WeakHashMap<>();
 
 		// -- BioFormatsFormatMetadata methods --
@@ -243,11 +245,11 @@ public class BioFormatsFormat extends AbstractFormat {
 		public ColorTable getColorTable(int imageIndex, final long planeIndex) {
 			if (imageIndex >= reader.getSeriesCount()) imageIndex = 0;
 
-			String key = getKey(reader, imageIndex);
+			final String key = getKey(reader, imageIndex);
 
 			// return early if we have the color table cached
-			ColorTable ct16 = colorTables16.get(key);
-			ColorTable ct8 = colorTables8.get(key);
+			final ColorTable ct16 = colorTables16.get(key);
+			final ColorTable ct8 = colorTables8.get(key);
 			if (ct16 != null || ct8 != null) {
 				return ct16 == null ? ct8 : ct16;
 			}
@@ -257,13 +259,13 @@ public class BioFormatsFormat extends AbstractFormat {
 			// See if the reader has a ColorTable attached already
 			try {
 				// try getting the 16 bit one
-				short[][] table16 = reader.get16BitLookupTable();
+				final short[][] table16 = reader.get16BitLookupTable();
 				if (table16 != null) {
 					reader.setSeries(oldIndex);
 					return colorTables16.put(key, new ColorTable16(table16));
 				}
 				// try getting 8bit color table
-				byte[][] table8 = reader.get8BitLookupTable();
+				final byte[][] table8 = reader.get8BitLookupTable();
 				if (table8 != null) {
 					reader.setSeries(oldIndex);
 					return colorTables8.put(key, new ColorTable8(table8));
@@ -280,15 +282,16 @@ public class BioFormatsFormat extends AbstractFormat {
 			if (retrieve != null) {
 				ct = colorTableXML.get(retrieve);
 				if (ct == null) {
-					long channelIndex = FormatTools.getNonPlanarAxisPosition(this,
+					final long channelIndex = FormatTools.getNonPlanarAxisPosition(this,
 						imageIndex, planeIndex, Axes.CHANNEL);
 					if (channelIndex >= 0 && retrieve.getChannelCount(imageIndex) > 0 &&
 						channelIndex < retrieve.getChannelCount(imageIndex))
 					{
 						final Color channelColor = retrieve.getChannelColor(imageIndex,
 							(int) channelIndex);
-						boolean eightBit = reader.getPixelType() == FormatTools.UINT8 ||
-							reader.getPixelType() == FormatTools.INT8;
+						final boolean eightBit = reader
+							.getPixelType() == FormatTools.UINT8 || reader
+								.getPixelType() == FormatTools.INT8;
 						ct = makeColorTable(channelColor, eightBit);
 						colorTableXML.put(retrieve, ct);
 					}
@@ -320,9 +323,9 @@ public class BioFormatsFormat extends AbstractFormat {
 			if (eightBit) {
 				// Make an 8-bit color table. The Color object is 8-bit, so this maps
 				// perfectly
-				byte[] r = new byte[lutLength];
-				byte[] g = new byte[lutLength];
-				byte[] b = new byte[lutLength];
+				final byte[] r = new byte[lutLength];
+				final byte[] g = new byte[lutLength];
+				final byte[] b = new byte[lutLength];
 				for (int i = 0; i < lutLength; i++) {
 					r[i] = (byte) (i * red / lutDivisor);
 					g[i] = (byte) (i * green / lutDivisor);
@@ -333,11 +336,11 @@ public class BioFormatsFormat extends AbstractFormat {
 			else {
 				// Make a 16-bit color table. Since the Color object is 8-bit, we
 				// have to chunk it across the 16-bit lut.
-				short[] r = new short[65536];
-				short[] g = new short[65536];
-				short[] b = new short[65536];
+				final short[] r = new short[65536];
+				final short[] g = new short[65536];
+				final short[] b = new short[65536];
 				for (int i = 0; i < lutLength; i++) {
-					int index = i * (65536 / 256);
+					final int index = i * (65536 / 256);
 					r[index] = (short) ((i * red / lutDivisor) << 8);
 					g[index] = (short) ((i * green / lutDivisor) << 8);
 					b[index] = (short) ((i * blue / lutDivisor) << 8);
@@ -352,40 +355,65 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		// -- Checker API Methods --
 
+		@Parameter
+		DataHandleService handles;
+
+		@Parameter
+		LogService log;
+
 		@Override
-		public boolean isFormat(final String name) {
-			if (!realSource(name)) return false;
-			return getCachedImageReader(this).isThisType(name);
+		public boolean isFormat(final Location loc) {
+			if (!realSource(loc)) return false;
+			return getCachedImageReader(this).isThisType(loc.getName());
 		}
 
 		@Override
-		public boolean isFormat(final String name, final SCIFIOConfig config) {
-			if (!new File(name).exists() || !realSource(name)) return false;
-			return getCachedImageReader(this).isThisType(name, config
+		public boolean isFormat(final Location loc, final SCIFIOConfig config) {
+			try {
+				DataHandle<Location> handle = handles.create(loc);
+				if (handle == null || !handle.exists() || !realSource(loc)) {
+					return false;
+				}
+				if (loc instanceof FileLocation) {
+					// shortcut for FileLocations
+					return getCachedImageReader(this).isThisType(((FileLocation) loc)
+						.getFile().getAbsolutePath(), config.checkerIsOpen());
+				}
+				loci.common.Location.getIdMap().put(loc.getName(),
+					new DataHandleAdapter(handle));
+			}
+			catch (final IOException exc) {
+				log.error("Failed to create handle for location " + loc.toString(),
+					exc);
+				return false;
+			}
+			return getCachedImageReader(this).isThisType(loc.getName(), config
 				.checkerIsOpen());
 		}
 
 		@Override
-		public boolean isFormat(final RandomAccessInputStream stream)
+		public boolean isFormat(final DataHandle<Location> handle)
 			throws IOException
 		{
-			if (!realSource(stream)) return false;
-			return getCachedImageReader(this).isThisType(
-				new RandomAccessInputStreamWrapper(stream));
+			if (!realSource(handle)) return false;
+			loci.common.Location.getIdMap().put(handle.get().getName(), handle);
+			return getCachedImageReader(this).isThisType(new DataHandleAdapter(
+				handle));
+		}
+
+		@Override
+		public boolean suffixSufficient() {
+			return false;
 		}
 
 		/**
 		 * @return true iff the given name corresponds to a non-virtual source
 		 */
-		private boolean realSource(String name) {
-			RandomAccessInputStream stream = null;
-			try {
-				stream = new RandomAccessInputStream(getContext(), name);
-				boolean isRealSource = realSource(stream);
-				stream.close();
-				return isRealSource;
+		private boolean realSource(final Location loc) { // FIXME this is wasteful!
+			try (final DataHandle<Location> handle = handles.create(loc)) {
+				return (handle != null && realSource(handle));
 			}
-			catch (IOException e) {
+			catch (final IOException e) {
 				return false;
 			}
 		}
@@ -394,10 +422,10 @@ public class BioFormatsFormat extends AbstractFormat {
 		 * @return true iff the given stream is non-virtual (can read at least one
 		 *         position)
 		 */
-		private boolean realSource(RandomAccessInputStream stream)
+		private boolean realSource(final DataHandle<Location> handle)
 			throws IOException
 		{
-			return FormatTools.validStream(stream, 1, stream.isLittleEndian());
+			return FormatTools.validStream(handle, 1, handle.isLittleEndian());
 		}
 
 		@Override
@@ -412,7 +440,7 @@ public class BioFormatsFormat extends AbstractFormat {
 		// -- Parser API Methods --
 
 		@Override
-		protected void typedParse(final RandomAccessInputStream stream,
+		protected void typedParse(final DataHandle<Location> stream,
 			final Metadata meta, final SCIFIOConfig config) throws IOException,
 			FormatException
 		{
@@ -420,13 +448,24 @@ public class BioFormatsFormat extends AbstractFormat {
 				final ImageReader reader = createImageReader(this);
 				meta.setReader(reader);
 
-				MetadataStore store = new OMEXMLMetadataImpl();
+				final MetadataStore store = new OMEXMLMetadataImpl();
 				reader.setMetadataStore(store);
 				reader.setOriginalMetadataPopulated(config
 					.parserIsSaveOriginalMetadata());
 				reader.setMetadataFiltered(config.parserIsFiltered());
 				reader.setGroupFiles(config.groupableIsGroupFiles());
-				reader.setId(stream.getFileName());
+
+				if (stream.get() instanceof FileLocation) {
+					// short-cut for file-locations
+					reader.setId(((FileLocation) stream.get()).getFile()
+						.getAbsolutePath());
+				}
+				else {
+					// fall-back: we try to map the datahandle directly
+					final DataHandleAdapter value = new DataHandleAdapter(stream);
+					loci.common.Location.getIdMap().put(stream.get().getName(), value);
+					reader.setId(stream.get().getName());
+				}
 
 				meta.setTable(new DefaultMetaTable(reader.getGlobalMetadata()));
 			}
@@ -448,12 +487,13 @@ public class BioFormatsFormat extends AbstractFormat {
 			final IFormatReader reader = getMetadata().getReader();
 			reader.setSeries(imageIndex);
 			try {
-				Metadata meta = getMetadata();
-				final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X), yIndex =
-					meta.get(imageIndex).getAxisIndex(Axes.Y);
-				final int x = (int) bounds.min(xIndex), y = (int) bounds.min(yIndex), //
-						w = (int) bounds.dimension(xIndex), h = (int) bounds.dimension(
-							yIndex);
+				final Metadata meta = getMetadata();
+				final int xIndex = meta.get(imageIndex).getAxisIndex(Axes.X);
+				final int yIndex = meta.get(imageIndex).getAxisIndex(Axes.Y);
+				final int x = (int) bounds.min(xIndex);
+				final int y = (int) bounds.min(yIndex);
+				final int w = (int) bounds.dimension(xIndex);
+				final int h = (int) bounds.dimension(yIndex);
 				reader.openBytes((int) planeIndex, plane.getBytes(), x, y, w, h);
 
 				plane.setColorTable(getMetadata().getColorTable(imageIndex,
@@ -489,8 +529,8 @@ public class BioFormatsFormat extends AbstractFormat {
 		// If our classList is uninitialized, or the Bio-Formats classList has
 		// changed, compute the current reader classes.
 		if (readerClasses == null || cachedReaderHash != currentHash) {
-			final ClassList<IFormatReader> targetClasses =
-				new ClassList<IFormatReader>(IFormatReader.class);
+			final ClassList<IFormatReader> targetClasses = new ClassList<>(
+				IFormatReader.class);
 
 			// add reader classes to the list, excluding the blacklist
 			for (final Class<? extends IFormatReader> c : defaultClasses) {
@@ -540,8 +580,9 @@ public class BioFormatsFormat extends AbstractFormat {
 		final ImageMetadata imgMeta = new DefaultImageMetadata();
 		reader.setSeries(s);
 
-		OMEXMLMetadataImpl store = (OMEXMLMetadataImpl) reader.getMetadataStore();
-		final ArrayList<CalibratedAxis> axes = new ArrayList<CalibratedAxis>();
+		final OMEXMLMetadataImpl store = (OMEXMLMetadataImpl) reader
+			.getMetadataStore();
+		final ArrayList<CalibratedAxis> axes = new ArrayList<>();
 		final LongArray axisLengths = new LongArray();
 		imgMeta.setPlanarAxisCount(2);
 		// parse interleaved channel dimensions
@@ -627,11 +668,11 @@ public class BioFormatsFormat extends AbstractFormat {
 
 	/**
 	 * Calibrates the given axis if the physical pixel size is non-null
-	 * 
+	 *
 	 * @param stageLabel
 	 */
-	private static void calibrate(Length pixelsPhysicalSize, CalibratedAxis axis,
-		Length stageLabel)
+	private static void calibrate(final Length pixelsPhysicalSize,
+		final CalibratedAxis axis, final Length stageLabel)
 	{
 		if (pixelsPhysicalSize != null) {
 			FormatTools.calibrate(axis, pixelsPhysicalSize.value().doubleValue(),

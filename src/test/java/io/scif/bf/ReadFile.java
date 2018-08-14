@@ -7,13 +7,13 @@
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
- * 
+ *
  * 1. Redistributions of source code must retain the above copyright notice,
  *    this list of conditions and the following disclaimer.
  * 2. Redistributions in binary form must reproduce the above copyright notice,
  *    this list of conditions and the following disclaimer in the documentation
  *    and/or other materials provided with the distribution.
- * 
+ *
  * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
  * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
@@ -44,17 +44,18 @@ import javax.swing.JFileChooser;
 
 import net.imagej.axis.AxisType;
 
+import org.scijava.io.location.FileLocation;
 
 /**
  * A simple manual test for the SCIFIO Bio-Formats compatibility layer.
- * 
+ *
  * @author Curtis Rueden
  */
 public class ReadFile {
 
 	public static void main(final String[] args) throws Exception {
-		final JFileChooser opener =
-			new JFileChooser(System.getProperty("user.home"));
+		final JFileChooser opener = new JFileChooser(System.getProperty(
+			"user.home"));
 		final int result = opener.showOpenDialog(null);
 		if (result == JFileChooser.APPROVE_OPTION) {
 			readFile(opener.getSelectedFile());
@@ -66,13 +67,13 @@ public class ReadFile {
 		IOException
 	{
 		final SCIFIO scifio = new SCIFIO();
-		final Format format =
-			scifio.format().getFormat(file.getAbsolutePath(),
-				new SCIFIOConfig().checkerSetOpen(true));
+		final FileLocation id = new FileLocation(file);
+		final Format format = scifio.format().getFormat(id, new SCIFIOConfig()
+			.checkerSetOpen(true));
 		System.out.println("file = " + file);
 		System.out.println("format = " + format.getFormatName());
 		final Parser parser = format.createParser();
-		final Metadata meta = parser.parse(file);
+		final Metadata meta = parser.parse(id);
 		for (int i = 0; i < meta.getImageCount(); i++) {
 			System.out.println("image #" + i + " dimensions:");
 			for (int a = 0; a < meta.get(i).getAxes().size(); a++) {
