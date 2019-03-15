@@ -15,11 +15,11 @@
 
 	<name>SCIFIO-Bio-Formats Compatibility Format</name>
 	<description>Compatibility layer for using un-converted Bio-Formats readers in SCIFIO applications.</description>
-	<url>http://imagej.net/SCIFIO</url>
+	<url>https://imagej.net/SCIFIO</url>
 	<inceptionYear>2013</inceptionYear>
 	<organization>
 		<name>SCIFIO</name>
-		<url>http://scif.io/</url>
+		<url>https://scif.io/</url>
 	</organization>
 	<licenses>
 		<license>
@@ -32,7 +32,7 @@
 		<developer>
 			<id>ctrueden</id>
 			<name>Curtis Rueden</name>
-			<url>http://imagej.net/User:Rueden</url>
+			<url>https://imagej.net/User:Rueden</url>
 			<roles>
 				<role>lead</role>
 				<role>debugger</role>
@@ -45,13 +45,13 @@
 	<contributors>
 		<contributor>
 			<name>Mark Hiner</name>
-			<url>http://imagej.net/User:Hinerm</url>
+			<url>https://imagej.net/User:Hinerm</url>
 			<roles><role>founder</role></roles>
 			<properties><id>hinerm</id></properties>
 		</contributor>
 		<contributor>
 			<name>Johannes Schindelin</name>
-			<url>http://imagej.net/User:Schindelin</url>
+			<url>https://imagej.net/User:Schindelin</url>
 			<properties><id>dscho</id></properties>
 		</contributor>
 	</contributors>
@@ -59,7 +59,7 @@
 	<mailingLists>
 		<mailingList>
 			<name>Image.sc Forum</name>
-			<archive>https://forum.image.sc/</archive>
+			<archive>https://forum.image.sc/tags/scifio</archive>
 		</mailingList>
 	</mailingLists>
 
@@ -67,7 +67,7 @@
 		<connection>scm:git:git://github.com/scifio/scifio-bf-compat</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio-bf-compat</developerConnection>
 		<tag>HEAD</tag>
-		<url>http://github.com/scifio/scifio-bf-compat</url>
+		<url>https://github.com/scifio/scifio-bf-compat</url>
 	</scm>
 	<issueManagement>
 		<system>GitHub Issues</system>
@@ -92,7 +92,7 @@ Wisconsin-Madison.</license.copyrightOwners>
 	<repositories>
 		<repository>
 			<id>imagej.public</id>
-			<url>http://maven.imagej.net/content/groups/public</url>
+			<url>https://maven.imagej.net/content/groups/public</url>
 		</repository>
 	</repositories>
 
