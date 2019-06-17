@@ -97,6 +97,11 @@ public class DataHandleAdapter extends RandomAccessInputStream implements
 	}
 
 	@Override
+	public boolean exists() throws IOException {
+		return handle.exists();
+	}
+
+	@Override
 	public void close() throws IOException {
 		handle.close(); // FIXME this could explode us
 	}
