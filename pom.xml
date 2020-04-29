@@ -88,7 +88,9 @@ Wisconsin-Madison.</license.copyrightOwners>
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
-		<scifio.version>0.38.0</scifio.version>
+		<imglib2.version>5.9.0</imglib2.version>
+		<imglib2-cache.version>1.0.0-beta-13</imglib2-cache.version>
+		<scifio.version>0.39.0</scifio.version>
 		<scifio-ome-xml.version>0.16.0</scifio-ome-xml.version>
 	</properties>
 
