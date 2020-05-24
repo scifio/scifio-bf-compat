@@ -81,17 +81,16 @@
 	<properties>
 		<package-name>io.scif.bf</package-name>
 		<license.licenseName>bsd_2</license.licenseName>
-		<license.copyrightOwners>Board of Regents of the University of
-Wisconsin-Madison.</license.copyrightOwners>
+		<license.copyrightOwners>SCIFIO developers.</license.copyrightOwners>
 		<license.projectName>SCIFIO Bio-Formats compatibility format.</license.projectName>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>deploy-to-scijava</releaseProfiles>
 
-		<imglib2.version>5.9.0</imglib2.version>
+		<imglib2.version>5.9.2</imglib2.version>
 		<imglib2-cache.version>1.0.0-beta-13</imglib2-cache.version>
-		<scifio.version>0.39.0</scifio.version>
-		<scifio-ome-xml.version>0.16.0</scifio-ome-xml.version>
+		<scifio.version>0.39.1</scifio.version>
+		<scifio-ome-xml.version>0.16.1</scifio-ome-xml.version>
 	</properties>
 
 	<repositories>
