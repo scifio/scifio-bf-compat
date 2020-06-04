@@ -52,6 +52,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map;
+import java.util.Objects;
 import java.util.WeakHashMap;
 
 import net.imagej.axis.Axes;
@@ -65,7 +66,6 @@ import net.imglib2.display.ColorTable8;
 import org.scijava.Priority;
 import org.scijava.io.handle.DataHandle;
 import org.scijava.io.handle.DataHandleService;
-import org.scijava.io.handle.FileHandle;
 import org.scijava.io.location.FileLocation;
 import org.scijava.io.location.Location;
 import org.scijava.log.LogService;
@@ -192,6 +192,8 @@ public class BioFormatsFormat extends AbstractFormat {
 
 		private IFormatReader reader;
 
+		private MetadataStore metadataStore;
+
 		private String formatName;
 
 		private final Map<String, ColorTable> colorTables16 = new WeakHashMap<>();
@@ -212,9 +214,18 @@ public class BioFormatsFormat extends AbstractFormat {
 		public void setReader(final IFormatReader reader) {
 			this.reader = reader;
 			formatName = null;
+			metadataStore = null;
 		}
 
 		// -- Metadata API Methods --
+
+		public MetadataStore getMetadataStore() {
+			// Cache the metadata store so that it can be used after the reader is
+			// closed.
+			if (Objects.isNull(metadataStore)) metadataStore = getReader()
+				.getMetadataStore();
+			return metadataStore;
+		}
 
 		@Override
 		public void populateImageMetadata() {
@@ -223,6 +234,8 @@ public class BioFormatsFormat extends AbstractFormat {
 			}
 			formatName = super.getFormatName();
 			formatName += " - Bio-Formats reader used: " + reader.getFormat();
+			// Ensure the metadata store is initialized
+			getMetadataStore();
 		}
 
 		@Override
@@ -276,8 +289,8 @@ public class BioFormatsFormat extends AbstractFormat {
 
 			ColorTable ct = null;
 			// Check the metadata to see if there is a Color entry in the XML
-			final MetadataRetrieve retrieve = omexmlService.asRetrieve(reader
-				.getMetadataStore());
+			final MetadataRetrieve retrieve = omexmlService.asRetrieve(
+				getMetadataStore());
 			if (retrieve != null) {
 				ct = colorTableXML.get(retrieve);
 				if (ct == null) {

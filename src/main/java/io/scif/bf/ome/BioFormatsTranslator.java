@@ -29,7 +29,6 @@
 
 package io.scif.bf.ome;
 
-import loci.formats.ome.OMEXMLMetadata;
 import io.scif.Metadata;
 import io.scif.bf.BioFormatsFormat;
 import io.scif.ome.OMEMetadata;
@@ -37,6 +36,9 @@ import io.scif.ome.translators.ToOMETranslator;
 
 import org.scijava.Priority;
 import org.scijava.plugin.Plugin;
+
+import loci.formats.meta.MetadataStore;
+import loci.formats.ome.OMEXMLMetadata;
 
 /**
  * Container class for translators between BioFormats and OME formats.
@@ -77,9 +79,9 @@ public class BioFormatsTranslator {
 			final OMEMetadata dest)
 		{
 			// Just copy the root over
-			Object root = source.getReader().getMetadataStore();
-			if (root != null && root instanceof ome.xml.meta.OMEXMLMetadata) {
-				dest.setRoot((OMEXMLMetadata) root);
+			MetadataStore store = source.getMetadataStore();
+			if (store != null && store instanceof ome.xml.meta.OMEXMLMetadata) {
+				dest.setRoot((OMEXMLMetadata) store);
 			}
 		}
 	}
