@@ -121,7 +121,7 @@ public class BioFormatsFormat extends AbstractFormat {
 
 	/**
 	 * List of Bio-Formats reader classes, excluding the {@link #DO_NOT_CONVERT}
-	 * blacklist.
+	 * blocklist.
 	 */
 	private ClassList<IFormatReader> readerClasses;
 
@@ -529,7 +529,7 @@ public class BioFormatsFormat extends AbstractFormat {
 
 	/**
 	 * Compiles the list of Bio-Formats reader classes, excluding the
-	 * {@link #DO_NOT_CONVERT} blacklist.
+	 * {@link #DO_NOT_CONVERT} blocklist.
 	 *
 	 * @return true if the reader class list was re-generated.
 	 */
@@ -544,7 +544,7 @@ public class BioFormatsFormat extends AbstractFormat {
 			final ClassList<IFormatReader> targetClasses = new ClassList<>(
 				IFormatReader.class);
 
-			// add reader classes to the list, excluding the blacklist
+			// add reader classes to the list, excluding the blocklist
 			for (final Class<? extends IFormatReader> c : defaultClasses) {
 				if (convert(c)) targetClasses.addClass(c);
 			}
