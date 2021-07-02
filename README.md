@@ -1,4 +1,4 @@
-[![](https://travis-ci.org/scifio/scifio-bf-compat.svg?branch=master)](https://travis-ci.org/scifio/scifio-bf-compat)
+[![](https://github.com/scifio/scifio-bf-compat/actions/workflows/build-main.yml/badge.svg)](https://github.com/scifio/scifio-bf-compat/actions/workflows/build-main.yml)
 
 scifio-bf-compat
 ================
