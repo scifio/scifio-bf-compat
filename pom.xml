@@ -64,7 +64,7 @@
 	</mailingLists>
 
 	<scm>
-		<connection>scm:git:git://github.com/scifio/scifio-bf-compat</connection>
+		<connection>scm:git:https://github.com/scifio/scifio-bf-compat</connection>
 		<developerConnection>scm:git:git@github.com:scifio/scifio-bf-compat</developerConnection>
 		<tag>HEAD</tag>
 		<url>https://github.com/scifio/scifio-bf-compat</url>
