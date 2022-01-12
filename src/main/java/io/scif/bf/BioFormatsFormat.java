@@ -76,6 +76,7 @@ import org.scijava.util.LongArray;
 import loci.formats.ClassList;
 import loci.formats.IFormatReader;
 import loci.formats.ImageReader;
+import loci.formats.Memoizer;
 import loci.formats.meta.MetadataRetrieve;
 import loci.formats.meta.MetadataStore;
 import loci.formats.ome.OMEXMLMetadataImpl;
@@ -458,7 +459,7 @@ public class BioFormatsFormat extends AbstractFormat {
 		{
 			try {
 				final ImageReader reader = createImageReader(this);
-				meta.setReader(reader);
+				meta.setReader(new Memoizer(reader));
 
 				final MetadataStore store = new OMEXMLMetadataImpl();
 				reader.setMetadataStore(store);
