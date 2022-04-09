@@ -109,7 +109,7 @@ public class BioFormatsFormat extends AbstractFormat {
 		"loci.formats.in.ICSReader", "loci.formats.in.JPEGReader",
 		"loci.formats.in.JPEG2000Reader", "loci.formats.in.MicromanagerReader",
 		"loci.formats.in.MinimalTiffReader", "loci.formats.in.MNGReader",
-		"loci.formats.in.NRRDReader", "loci.formats.in.OBFReader",
+		"loci.formats.in.NRRDReader",
 		"loci.formats.in.PCXReader", "loci.formats.in.PGMReader",
 		"loci.formats.in.PictReader", "loci.formats.in.QTReader",
 		"loci.formats.in.SCIFIOReader", "loci.formats.in.SDTReader",
