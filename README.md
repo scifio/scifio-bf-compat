@@ -10,13 +10,13 @@ Usage
 =====
 
 __Short version:__ Add the following dependencies to your project:
-* [`io.scif:scifio`](http://maven.imagej.net/index.html#nexus-search;gav~io.scif~scifio~~~~kw,versionexpand)
+* [`io.scif:scifio`](https://maven.scijava.org/index.html#nexus-search;gav~io.scif~scifio~~~~kw,versionexpand)
   - to use SCIFIO
-* [`io.scif:scifio-bf-compat`](http://maven.imagej.net/index.html#nexus-search;gav~io.scif~scifio-bf-compat~~~~kw,versionexpand)
+* [`io.scif:scifio-bf-compat`](https://maven.scijava.org/index.html#nexus-search;gav~io.scif~scifio-bf-compat~~~~kw,versionexpand)
   - to enable Bio-Formats support within SCIFIO
-* [`ome:formats-bsd`](http://maven.imagej.net/index.html#nexus-search;gav~ome~formats-bsd~~~~kw,versionexpand)
+* [`ome:formats-bsd`](https://maven.scijava.org/index.html#nexus-search;gav~ome~formats-bsd~~~~kw,versionexpand)
   - optional, for open formats supported by Bio-Formats
-* [`ome:formats-gpl`](http://maven.imagej.net/index.html#nexus-search;gav~ome~formats-gpl~~~~kw,versionexpand)
+* [`ome:formats-gpl`](https://maven.scijava.org/index.html#nexus-search;gav~ome~formats-gpl~~~~kw,versionexpand)
   - optional, for proprietary formats supported by Bio-Formats
 
 To ensure version compatibility, you should import or extend
@@ -71,10 +71,9 @@ __Details:__ Add the following blocks to your Maven POM:
 </dependencies>
 ...
 <repositories>
-  <!-- NB: For SCIFIO and Bio-Formats dependencies. -->
   <repository>
     <id>imagej.public</id>
-    <url>http://maven.imagej.net/content/groups/public</url>
+    <url>https://maven.scijava.org/content/groups/public</url>
   </repository>
 </repositories>
 ```
