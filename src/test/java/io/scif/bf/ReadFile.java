@@ -2,7 +2,7 @@
  * #%L
  * SCIFIO Bio-Formats compatibility format.
  * %%
- * Copyright (C) 2013 - 2020 SCIFIO developers.
+ * Copyright (C) 2013 - 2022 SCIFIO developers.
  * %%
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions are met:
