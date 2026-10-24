@@ -1,6 +1,7 @@
 .classpath
 .project
 .settings
+.factorypath
 .DS_Store
 build
 emailable-report.html
@@ -11,3 +12,4 @@ testng-results.xml
 testng.css
 tools/*.jar
 *.log
+.idea/
